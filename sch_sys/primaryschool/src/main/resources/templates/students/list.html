@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students - Primary School Management System</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="school-name">
+                <i class="fas fa-school"></i>
+                <span>Primary School Management System</span>
+            </div>
+            <div class="school-info">
+                <p>Uganda Primary Curriculum</p>
+                <p th:text="${#temporals.format(#temporal.createNow(), 'EEEE, dd MMMM yyyy')}">Tuesday, 18 February 2026</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Container -->
+    <div class="nav-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a th:href="@{/}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                <li><a th:href="@{/students}" class="active"><i class="fas fa-user-graduate"></i><span>Students</span></a></li>
+                <li><a th:href="@{/teachers}"><i class="fas fa-chalkboard-teacher"></i><span>Teachers</span></a></li>
+                <li><a th:href="@{/classes}"><i class="fas fa-door-open"></i><span>Classes</span></a></li>
+                <li><a th:href="@{/subjects}"><i class="fas fa-book"></i><span>Subjects</span></a></li>
+                <li><a th:href="@{/performance}"><i class="fas fa-chart-line"></i><span>Performance</span></a></li>
+                <li><a th:href="@{/reports}"><i class="fas fa-file-alt"></i><span>Reports</span></a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">
+                <div class="page-header">
+                    <h1 class="page-title">Students</h1>
+                    <a th:href="@{/students/new}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add Student
+                    </a>
+                </div>
+
+                <!-- Filter by Class -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Filter by Class</h2>
+                    </div>
+                    <form th:action="@{/students}" method="get" class="d-flex gap-2" style="align-items: flex-end;">
+                        <div class="form-group" style="margin-bottom: 0; flex: 1; max-width: 300px;">
+                            <label class="form-label">Select Class</label>
+                            <select name="classId" class="form-control">
+                                <option value="">All Classes</option>
+                                <option th:each="cls : ${classes}" th:value="${cls.id}" th:text="${cls.className}" th:selected="${cls.id == selectedClassId}">P.1</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> Filter</button>
+                        <a th:href="@{/students}" class="btn btn-secondary">Clear</a>
+                    </form>
+                </div>
+
+                <!-- Students List -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title" th:text="${selectedClass != null} ? 'Students in ' + ${selectedClass.className} : 'All Students'">Students</h2>
+                        <span class="badge badge-primary" th:text="${students.size()} + ' Students'">0 Students</span>
+                    </div>
+                    
+                    <div th:if="${students.empty}" class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> No students found. <a th:href="@{/students/new}">Add a new student</a>
+                    </div>
+
+                    <div class="table-container" th:if="${!students.empty}">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Admission No.</th>
+                                    <th>Name</th>
+                                    <th>Gender</th>
+                                    <th>Date of Birth</th>
+                                    <th>Class</th>
+                                    <th>Parent Name</th>
+                                    <th>Parent Phone</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="student : ${students}">
+                                    <td th:text="${student.admissionNumber}">ADM20260001</td>
+                                    <td><a th:href="@{/students/{id}(id=${student.id})}" th:text="${student.firstName} + ' ' + ${student.lastName}">John Doe</a></td>
+                                    <td th:text="${student.gender}">Male</td>
+                                    <td th:text="${student.dateOfBirth}">2015-01-15</td>
+                                    <td><span class="badge badge-primary" th:text="${student.schoolClass != null} ? ${student.schoolClass.className} : 'Not Assigned'">P.1</span></td>
+                                    <td th:text="${student.parentName}">Parent Name</td>
+                                    <td th:text="${student.parentPhone}">0772123456</td>
+                                    <td>
+                                        <a th:href="@{/students/{id}(id=${student.id})}" class="btn btn-sm btn-primary btn-action"><i class="fas fa-eye"></i></a>
+                                        <a th:href="@{/students/{id}/edit(id=${student.id})}" class="btn btn-sm btn-secondary btn-action"><i class="fas fa-edit"></i></a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2026 Primary School Management System. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>

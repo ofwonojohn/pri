@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Primary School Management System</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="school-name">
+                <i class="fas fa-school"></i>
+                <span>Primary School Management System</span>
+            </div>
+            <div class="school-info">
+                <p>Uganda Primary Curriculum</p>
+                <p>Wednesday, 18 February 2026</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Container -->
+    <div class="nav-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <ul class="sidebar-menu">
+                <li>
+                    <a th:href="@{/}" class="active">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/students}">
+                        <i class="fas fa-user-graduate"></i>
+                        <span>Students</span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/teachers}">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span>Teachers</span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/classes}">
+                        <i class="fas fa-door-open"></i>
+                        <span>Classes</span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/subjects}">
+                        <i class="fas fa-book"></i>
+                        <span>Subjects</span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/performance}">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Performance</span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/reports}">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Reports</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">
+                <div class="page-header">
+                    <h1 class="page-title">Dashboard</h1>
+                    <p class="text-muted">Welcome to Primary School Management System</p>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <div class="stat-value" th:text="${totalStudents}">0</div>
+                        <div class="stat-label">Total Students</div>
+                    </div>
+                    <div class="stat-card green">
+                        <div class="stat-icon">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div class="stat-value" th:text="${totalTeachers}">0</div>
+                        <div class="stat-label">Total Teachers</div>
+                    </div>
+                    <div class="stat-card yellow">
+                        <div class="stat-icon">
+                            <i class="fas fa-door-open"></i>
+                        </div>
+                        <div class="stat-value" th:text="${totalClasses}">0</div>
+                        <div class="stat-label">Total Classes</div>
+                    </div>
+                    <div class="stat-card red">
+                        <div class="stat-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="stat-value" th:text="${totalSubjects}">0</div>
+                        <div class="stat-label">Total Subjects</div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Quick Actions</h2>
+                    </div>
+                    <div class="d-flex gap-2" style="flex-wrap: wrap;">
+                        <a th:href="@{/students/new}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Student
+                        </a>
+                        <a th:href="@{/teachers/new}" class="btn btn-success">
+                            <i class="fas fa-user-plus"></i> Add Teacher
+                        </a>
+                        <a th:href="@{/performance}" class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Enter Marks
+                        </a>
+                        <a th:href="@{/reports}" class="btn btn-secondary">
+                            <i class="fas fa-file-alt"></i> Generate Reports
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Information Cards -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Uganda Primary Curriculum</h2>
+                        </div>
+                        <p>The system follows the Uganda Primary School Curriculum with classes from P.1 to P.7.</p>
+                        <ul style="margin-top: 1rem; padding-left: 1.5rem;">
+                            <li>Primary 1 (P.1) - Primary 7 (P.7)</li>
+                            <li>3 Terms per Academic Year</li>
+                            <li>Uganda Grading System (D1-F9)</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Grading System</h2>
+                        </div>
+                        <table class="table" style="font-size: 0.9rem;">
+                            <thead>
+                                <tr>
+                                    <th>Grade</th>
+                                    <th>Marks</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><span class="badge badge-success">D1</span></td><td>90-100</td><td>Excellent</td></tr>
+                                <tr><td><span class="badge badge-primary">D2</span></td><td>80-89</td><td>Very Good</td></tr>
+                                <tr><td><span class="badge badge-warning">C3-C6</span></td><td>60-79</td><td>Good-Pass</td></tr>
+                                <tr><td><span class="badge badge-warning">P7-P8</span></td><td>50-59</td><td>Pass</td></tr>
+                                <tr><td><span class="badge badge-danger">F9</span></td><td>0-49</td><td>Fail</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 Primary School Management System. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>
