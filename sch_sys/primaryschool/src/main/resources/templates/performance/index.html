@@ -7,25 +7,54 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <header class="header"><div class="header-content"><div class="school-name"><i class="fas fa-school"></i><span>Primary School Management System</span></div></div></header>
-    <div class="nav-container">
-        <nav class="sidebar"><ul class="sidebar-menu">
-            <li><a th:href="@{/}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
-            <li><a th:href="@{/students}"><i class="fas fa-user-graduate"></i><span>Students</span></a></li>
-            <li><a th:href="@{/teachers}"><i class="fas fa-chalkboard-teacher"></i><span>Teachers</span></a></li>
-            <li><a th:href="@{/classes}"><i class="fas fa-door-open"></i><span>Classes</span></a></li>
-            <li><a th:href="@{/subjects}"><i class="fas fa-book"></i><span>Subjects</span></a></li>
-            <li><a th:href="@{/performance}" class="active"><i class="fas fa-chart-line"></i><span>Performance</span></a></li>
-            <li><a th:href="@{/reports}"><i class="fas fa-file-alt"></i><span>Reports</span></a></li>
-        </ul></nav>
-        <main class="main-content"><div class="container">
-            <div class="page-header"><h1 class="page-title">Performance Management</h1></div>
-            <div class="stats-grid">
-                <div class="stat-card"><i class="fas fa-edit stat-icon"></i><div class="stat-info"><h3>Enter Marks</h3><p>Record student marks</p><a th:href="@{/performance/entry}" class="btn btn-primary mt-2">Enter Marks</a></div></div>
-                <div class="stat-card"><i class="fas fa-list-alt stat-icon"></i><div class="stat-info"><h3>Class Performance</h3><p>View class results</p><a th:href="@{/performance/class}" class="btn btn-primary mt-2">View Classes</a></div></div>
+    <header class="header">
+        <div class="header-content">
+            <div class="school-name">
+                <i class="fas fa-school"></i>
+                <span>Primary School Management System</span>
             </div>
-        </div></main>
+        </div>
+    </header>
+    <div class="nav-container">
+        <nav class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a th:href="@{/}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                <li><a th:href="@{/students}"><i class="fas fa-user-graduate"></i><span>Students</span></a></li>
+                <li><a th:href="@{/teachers}"><i class="fas fa-chalkboard-teacher"></i><span>Teachers</span></a></li>
+                <li><a th:href="@{/classes}"><i class="fas fa-door-open"></i><span>Classes</span></a></li>
+                <li><a th:href="@{/subjects}"><i class="fas fa-book"></i><span>Subjects</span></a></li>
+                <li><a th:href="@{/performance}" class="active"><i class="fas fa-chart-line"></i><span>Performance</span></a></li>
+                <li><a th:href="@{/reports}"><i class="fas fa-file-alt"></i><span>Reports</span></a></li>
+            </ul>
+        </nav>
+        <main class="main-content">
+            <div class="container">
+                <div class="page-header">
+                    <h1 class="page-title">Performance Management</h1>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <i class="fas fa-edit stat-icon"></i>
+                        <div class="stat-info">
+                            <h3>Enter Marks</h3>
+                            <p>Record student marks</p>
+                            <a th:href="@{/performance/entry}" class="btn btn-primary mt-2">Enter Marks</a>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-list-alt stat-icon"></i>
+                        <div class="stat-info">
+                            <h3>Class Performance</h3>
+                            <p>View class results</p>
+                            <a th:href="@{/performance/class}" class="btn btn-primary mt-2">View Classes</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
-    <footer class="footer"><p>&copy; 2026 Primary School Management System. All Rights Reserved.</p></footer>
+    <footer class="footer">
+        <p>&copy; 2026 Primary School Management System. All Rights Reserved.</p>
+    </footer>
 </body>
 </html>
