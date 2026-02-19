@@ -2,48 +2,77 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teachers - Primary School Management System</title>
+    <title>Teachers</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <header class="header"><div class="header-content"><div class="school-name"><i class="fas fa-school"></i><span>Primary School Management System</span></div></div></header>
-    <div class="nav-container">
-        <nav class="sidebar"><ul class="sidebar-menu">
-            <li><a th:href="@{/}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
-            <li><a th:href="@{/students}"><i class="fas fa-user-graduate"></i><span>Students</span></a></li>
-            <li><a th:href="@{/teachers}" class="active"><i class="fas fa-chalkboard-teacher"></i><span>Teachers</span></a></li>
-            <li><a th:href="@{/classes}"><i class="fas fa-door-open"></i><span>Classes</span></a></li>
-            <li><a th:href="@{/subjects}"><i class="fas fa-book"></i><span>Subjects</span></a></li>
-            <li><a th:href="@{/performance}"><i class="fas fa-chart-line"></i><span>Performance</span></a></li>
-            <li><a th:href="@{/reports}"><i class="fas fa-file-alt"></i><span>Reports</span></a></li>
-        </ul></nav>
-        <main class="main-content"><div class="container">
-            <div class="page-header">
-                <h1 class="page-title">Teachers</h1>
-                <a th:href="@{/teachers/new}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Teacher</a>
+    <header class="header">
+        <div class="header-content">
+            <div class="school-name">
+                <i class="fas fa-school"></i>
+                <span>Primary School Management System</span>
             </div>
-            <div class="card">
-                <div class="card-header"><h2 class="card-title">All Teachers</h2><span class="badge badge-primary" th:text="${teachers.size()} + ' Teachers'">0</span></div>
-                <div th:if="${teachers.empty}" class="alert alert-info">No teachers found.</div>
-                <div class="table-container" th:if="${!teachers.empty}">
+        </div>
+    </header>
+    <div class="nav-container">
+        <nav class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a th:href="@{/}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                <li><a th:href="@{/students}"><i class="fas fa-user-graduate"></i><span>Students</span></a></li>
+                <li><a th:href="@{/teachers}" class="active"><i class="fas fa-chalkboard-teacher"></i><span>Teachers</span></a></li>
+                <li><a th:href="@{/classes}"><i class="fas fa-door-open"></i><span>Classes</span></a></li>
+                <li><a th:href="@{/subjects}"><i class="fas fa-book"></i><span>Subjects</span></a></li>
+                <li><a th:href="@{/performance}"><i class="fas fa-chart-line"></i><span>Performance</span></a></li>
+                <li><a th:href="@{/reports}"><i class="fas fa-file-alt"></i><span>Reports</span></a></li>
+            </ul>
+        </nav>
+        <main class="main-content">
+            <div class="container">
+                <div class="page-header">
+                    <h1 class="page-title">Teachers</h1>
+                    <a th:href="@{/teachers/new}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Teacher</a>
+                </div>
+                <div class="card">
                     <table class="table">
-                        <thead><tr><th>Name</th><th>Gender</th><th>Phone</th><th>Email</th><th>Actions</th></tr></thead>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Employee No</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Subjects</th>
+                                <th>Class Teacher</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
                         <tbody>
                             <tr th:each="teacher : ${teachers}">
-                                <td><a th:href="@{/teachers/{id}(id=${teacher.id})}" th:text="${teacher.firstName} + ' ' + ${teacher.lastName}">John</a></td>
-                                <td th:text="${teacher.gender}">Male</td>
-                                <td th:text="${teacher.phoneNumber}">0772123456</td>
-                                <td th:text="${teacher.email}">teacher@email.com</td>
-                                <td><a th:href="@{/teachers/{id}(id=${teacher.id})}" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></a><a th:href="@{/teachers/{id}/edit(id=${teacher.id})}" class="btn btn-sm btn-secondary"><i class="fas fa-edit"></i></a></td>
+                                <td th:text="${teacher.id}">1</td>
+                                <td th:text="${teacher.employeeNumber}">EMP001</td>
+                                <td th:text="${teacher.firstName}">John</td>
+                                <td th:text="${teacher.lastName}">Doe</td>
+                                <td>
+                                    <span th:each="subj : ${teacher.subjects}" class="badge badge-info" th:text="${subj.subjectName}" style="margin-right:4px;">Math</span>
+                                </td>
+                                <td th:text="${teacher.classTeacher != null ? teacher.classTeacher.className : '-'}">P.1</td>
+                                <td>
+                                    <a th:href="@{/teachers/{id}(id=${teacher.id})}" class="btn btn-sm btn-info">View</a>
+                                    <a th:href="@{/teachers/{id}/edit(id=${teacher.id})}" class="btn btn-sm btn-warning">Edit</a>
+                                    <a th:href="@{/teachers/{id}/delete(id=${teacher.id})}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(teachers)}">
+                                <td colspan="7" class="text-center">No teachers found</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-        </div></main>
+        </main>
     </div>
-    <footer class="footer"><p>&copy; 2026 Primary School Management System. All Rights Reserved.</p></footer>
+    <footer class="footer">
+        <p>&copy; 2026 Primary School Management System. All Rights Reserved.</p>
+    </footer>
 </body>
 </html>
