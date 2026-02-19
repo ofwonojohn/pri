@@ -7,38 +7,71 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <header class="header"><div class="header-content"><div class="school-name"><i class="fas fa-school"></i><span>Primary School Management System</span></div></div></header>
+    <header class="header">
+        <div class="header-content">
+            <div class="school-name">
+                <i class="fas fa-school"></i>
+                <span>Primary School Management System</span>
+            </div>
+        </div>
+    </header>
     <div class="nav-container">
-        <nav class="sidebar"><ul class="sidebar-menu">
-            <li><a th:href="@{/}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
-            <li><a th:href="@{/students}"><i class="fas fa-user-graduate"></i><span>Students</span></a></li>
-            <li><a th:href="@{/teachers}"><i class="fas fa-chalkboard-teacher"></i><span>Teachers</span></a></li>
-            <li><a th:href="@{/classes}" class="active"><i class="fas fa-door-open"></i><span>Classes</span></a></li>
-            <li><a th:href="@{/subjects}"><i class="fas fa-book"></i><span>Subjects</span></a></li>
-            <li><a th:href="@{/performance}"><i class="fas fa-chart-line"></i><span>Performance</span></a></li>
-            <li><a th:href="@{/reports}"><i class="fas fa-file-alt"></i><span>Reports</span></a></li>
-        </ul></nav>
-        <main class="main-content"><div class="container">
-            <div class="page-header"><h1 class="page-title">Classes</h1><a th:href="@{/classes/new}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Class</a></div>
-            <div class="card">
-                <div class="card-header"><h2 class="card-title">All Classes</h2></div>
-                <div th:if="${classes.empty}" class="alert alert-info">No classes found.</div>
-                <div class="table-container" th:if="${!classes.empty}">
+        <nav class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a th:href="@{/}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                <li><a th:href="@{/students}"><i class="fas fa-user-graduate"></i><span>Students</span></a></li>
+                <li><a th:href="@{/teachers}"><i class="fas fa-chalkboard-teacher"></i><span>Teachers</span></a></li>
+                <li><a th:href="@{/classes}" class="active"><i class="fas fa-door-open"></i><span>Classes</span></a></li>
+                <li><a th:href="@{/subjects}"><i class="fas fa-book"></i><span>Subjects</span></a></li>
+                <li><a th:href="@{/performance}"><i class="fas fa-chart-line"></i><span>Performance</span></a></li>
+                <li><a th:href="@{/reports}"><i class="fas fa-file-alt"></i><span>Reports</span></a></li>
+            </ul>
+        </nav>
+        <main class="main-content">
+            <div class="container">
+                <div class="page-header">
+                    <h1 class="page-title">Classes</h1>
+                    <a th:href="@{/classes/new}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Class</a>
+                </div>
+                <div class="card">
                     <table class="table">
-                        <thead><tr><th>Class Name</th><th>Level</th><th>Class Teacher</th><th>Actions</th></tr></thead>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Class Name</th>
+                                <th>Level</th>
+                                <th>Class Teacher</th>
+                                <th>Students Count</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
                         <tbody>
                             <tr th:each="cls : ${classes}">
-                                <td><a th:href="@{/classes/{id}(id=${cls.id})}" th:text="${cls.className}">P.1</a></td>
+                                <td th:text="${cls.id}">1</td>
+                                <td th:text="${cls.className}">P.1</td>
                                 <td th:text="${cls.classLevel}">1</td>
-                                <td><span th:if="${cls.classTeacher != null}" class="badge badge-success" th:text="${cls.classTeacher.firstName}">Teacher</span><span th:if="${cls.classTeacher == null}" class="badge badge-warning">Not Assigned</span></td>
-                                <td><a th:href="@{/classes/{id}(id=${cls.id})}" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></a></td>
+                                <td>
+                                    <span th:if="${cls.classTeacher != null}" class="badge badge-success" th:text="${cls.classTeacher.firstName + ' ' + cls.classTeacher.lastName}">Teacher Name</span>
+                                    <span th:if="${cls.classTeacher == null}" class="badge badge-warning">Not Assigned</span>
+                                </td>
+                                <td th:text="${cls.students != null ? cls.students.size() : 0}">0</td>
+                                <td>
+                                    <a th:href="@{/classes/{id}(id=${cls.id})}" class="btn btn-sm btn-info">View</a>
+                                    <a th:href="@{/classes/{id}/edit(id=${cls.id})}" class="btn btn-sm btn-warning">Edit</a>
+                                    <a th:href="@{/classes/{id}/delete(id=${cls.id})}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(classes)}">
+                                <td colspan="6" class="text-center">No classes found</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-        </div></main>
+        </main>
     </div>
-    <footer class="footer"><p>&copy; 2026 Primary School Management System. All Rights Reserved.</p></footer>
+    <footer class="footer">
+        <p>&copy; 2026 Primary School Management System. All Rights Reserved.</p>
+    </footer>
 </body>
 </html>
