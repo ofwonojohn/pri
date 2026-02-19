@@ -7,42 +7,68 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <header class="header"><div class="header-content"><div class="school-name"><i class="fas fa-school"></i><span>Primary School Management System</span></div></div></header>
-    <div class="nav-container">
-        <nav class="sidebar"><ul class="sidebar-menu">
-            <li><a th:href="@{/}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
-            <li><a th:href="@{/students}"><i class="fas fa-user-graduate"></i><span>Students</span></a></li>
-            <li><a th:href="@{/teachers}"><i class="fas fa-chalkboard-teacher"></i><span>Teachers</span></a></li>
-            <li><a th:href="@{/classes}"><i class="fas fa-door-open"></i><span>Classes</span></a></li>
-            <li><a th:href="@{/subjects}" class="active"><i class="fas fa-book"></i><span>Subjects</span></a></li>
-            <li><a th:href="@{/performance}"><i class="fas fa-chart-line"></i><span>Performance</span></a></li>
-            <li><a th:href="@{/reports}"><i class="fas fa-file-alt"></i><span>Reports</span></a></li>
-        </ul></nav>
-        <main class="main-content"><div class="container">
-            <div class="page-header"><h1 class="page-title">Subjects</h1><a th:href="@{/subjects/new}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Subject</a></div>
-            <div class="card">
-                <table class="table">
-                    <thead><tr><th>ID</th><th>Subject Name</th><th>Code</th><th>Classes</th><th>Actions</th></tr></thead>
-                    <tbody>
-                        <tr th:each="subject : ${subjects}">
-                            <td th:text="${subject.id}">1</td>
-                            <td th:text="${subject.subjectName}">Mathematics</td>
-                            <td th:text="${subject.subjectCode}">MATH</td>
-                            <td>
-                                <span th:each="cls : ${subject.classes}" class="badge badge-info" th:text="${cls.className}" style="margin-right:4px;">P.1</span>
-                            </td>
-                            <td>
-                                <a th:href="@{/subjects/{id}(id=${subject.id})}" class="btn btn-sm btn-info">View</a>
-                                <a th:href="@{/subjects/{id}/edit(id=${subject.id})}" class="btn btn-sm btn-warning">Edit</a>
-                                <a th:href="@{/subjects/{id}/delete(id=${subject.id})}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
-                            </td>
-                        </tr>
-                        <tr th:if="${#lists.isEmpty(subjects)}"><td colspan="5" class="text-center">No subjects found</td></tr>
-                    </tbody>
-                </table>
+    <header class="header">
+        <div class="header-content">
+            <div class="school-name">
+                <i class="fas fa-school"></i>
+                <span>Primary School Management System</span>
             </div>
-        </div></main>
+        </div>
+    </header>
+    <div class="nav-container">
+        <nav class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a th:href="@{/}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                <li><a th:href="@{/students}"><i class="fas fa-user-graduate"></i><span>Students</span></a></li>
+                <li><a th:href="@{/teachers}"><i class="fas fa-chalkboard-teacher"></i><span>Teachers</span></a></li>
+                <li><a th:href="@{/classes}"><i class="fas fa-door-open"></i><span>Classes</span></a></li>
+                <li><a th:href="@{/subjects}" class="active"><i class="fas fa-book"></i><span>Subjects</span></a></li>
+                <li><a th:href="@{/performance}"><i class="fas fa-chart-line"></i><span>Performance</span></a></li>
+                <li><a th:href="@{/reports}"><i class="fas fa-file-alt"></i><span>Reports</span></a></li>
+            </ul>
+        </nav>
+        <main class="main-content">
+            <div class="container">
+                <div class="page-header">
+                    <h1 class="page-title">Subjects</h1>
+                    <a th:href="@{/subjects/new}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Subject</a>
+                </div>
+                <div class="card">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Subject Name</th>
+                                <th>Code</th>
+                                <th>Classes</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="subject : ${subjects}">
+                                <td th:text="${subject.id}">1</td>
+                                <td th:text="${subject.subjectName}">Mathematics</td>
+                                <td th:text="${subject.subjectCode}">MATH</td>
+                                <td>
+                                    <span th:each="cls : ${subject.classes}" class="badge badge-info" th:text="${cls.className}" style="margin-right:4px;">P.1</span>
+                                </td>
+                                <td>
+                                    <a th:href="@{/subjects/{id}(id=${subject.id})}" class="btn btn-sm btn-info">View</a>
+                                    <a th:href="@{/subjects/{id}/edit(id=${subject.id})}" class="btn btn-sm btn-warning">Edit</a>
+                                    <a th:href="@{/subjects/{id}/delete(id=${subject.id})}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(subjects)}">
+                                <td colspan="5" class="text-center">No subjects found</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
     </div>
-    <footer class="footer"><p>&copy; 2026 Primary School Management System. All Rights Reserved.</p></footer>
+    <footer class="footer">
+        <p>&copy; 2026 Primary School Management System. All Rights Reserved.</p>
+    </footer>
 </body>
 </html>

@@ -2,16 +2,17 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${student.id != null} ? 'Edit Student' : 'Add Student'">Student Form</title>
+    <title>Student Form</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <header class="header">
         <div class="header-content">
-            <div class="school-name"><i class="fas fa-school"></i><span>Primary School Management System</span></div>
-            <div class="school-info"><p>Uganda Primary Curriculum</p></div>
+            <div class="school-name">
+                <i class="fas fa-school"></i>
+                <span>Primary School Management System</span>
+            </div>
         </div>
     </header>
     <div class="nav-container">
@@ -29,21 +30,25 @@
         <main class="main-content">
             <div class="container">
                 <div class="page-header">
-                    <h1 class="page-title" th:text="${student.id != null} ? 'Edit Student' : 'Add New Student'">Add Student</h1>
+                    <h1 class="page-title" th:text="${student.id != null} ? 'Edit Student' : 'Add Student'">Add Student</h1>
                 </div>
                 <div class="card">
                     <form th:action="${student.id != null} ? @{/students/{id}/update(id=${student.id})} : @{/students/save}" th:object="${student}" method="post">
                         <div class="form-row">
                             <div class="form-group">
-                                <label class="form-label">First Name *</label>
-                                <input type="text" th:field="*{firstName}" class="form-control" required>
+                                <label class="form-label">Admission Number *</label>
+                                <input type="text" th:field="*{admissionNumber}" class="form-control" placeholder="ADM001" required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Last Name *</label>
-                                <input type="text" th:field="*{lastName}" class="form-control" required>
+                                <label class="form-label">First Name *</label>
+                                <input type="text" th:field="*{firstName}" class="form-control" placeholder="John" required>
                             </div>
                         </div>
                         <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Last Name *</label>
+                                <input type="text" th:field="*{lastName}" class="form-control" placeholder="Doe" required>
+                            </div>
                             <div class="form-group">
                                 <label class="form-label">Gender *</label>
                                 <select th:field="*{gender}" class="form-control" required>
@@ -52,12 +57,12 @@
                                     <option value="Female">Female</option>
                                 </select>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Date of Birth *</label>
-                                <input type="date" th:field="*{dateOfBirth}" class="form-control" required>
-                            </div>
                         </div>
                         <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Date of Birth</label>
+                                <input type="date" th:field="*{dateOfBirth}" class="form-control">
+                            </div>
                             <div class="form-group">
                                 <label class="form-label">Class</label>
                                 <select th:field="*{schoolClass}" class="form-control">
@@ -65,41 +70,22 @@
                                     <option th:each="cls : ${classes}" th:value="${cls.id}" th:text="${cls.className}">P.1</option>
                                 </select>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Admission Number</label>
-                                <input type="text" th:field="*{admissionNumber}" class="form-control" placeholder="Auto-generated if left empty">
-                            </div>
                         </div>
-                        <h3 style="margin: 1.5rem 0 1rem; color: var(--primary-color);">Parent/Guardian Information</h3>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Parent Name</label>
-                                <input type="text" th:field="*{parentName}" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Parent Phone</label>
-                                <input type="text" th:field="*{parentPhone}" class="form-control">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Parent Email</label>
-                                <input type="email" th:field="*{parentEmail}" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Address</label>
-                                <input type="text" th:field="*{address}" class="form-control">
-                            </div>
+                        <div class="form-group">
+                            <label class="form-label">Address</label>
+                            <textarea th:field="*{address}" class="form-control" rows="3" placeholder="Enter address"></textarea>
                         </div>
                         <div class="d-flex gap-2 mt-3">
-                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Student</button>
-                            <a th:href="@{/students}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to List</a>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <a th:href="@{/students}" class="btn btn-secondary">Back</a>
                         </div>
                     </form>
                 </div>
             </div>
         </main>
     </div>
-    <footer class="footer"><p>&copy; 2026 Primary School Management System. All Rights Reserved.</p></footer>
+    <footer class="footer">
+        <p>&copy; 2026 Primary School Management System. All Rights Reserved.</p>
+    </footer>
 </body>
 </html>
