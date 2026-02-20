@@ -1,5 +1,6 @@
 package com.primaryschool.primaryschool.controller;
 
+import com.primaryschool.primaryschool.dto.MarkEntry;
 import com.primaryschool.primaryschool.entity.*;
 import com.primaryschool.primaryschool.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,40 +77,49 @@ public class GradeController {
     }
 
     @PostMapping("/save-grade")
-    public String saveGrade(@RequestParam Long studentId,
+    public String saveGrades(@RequestParam Long classId,
                             @RequestParam Long subjectId,
-                            @RequestParam Long classId,
                             @RequestParam String term,
                             @RequestParam Integer year,
-                            @RequestParam Double marks) {
+                            @RequestParam List<Long> studentIds,
+                            @RequestParam List<Double> scores) {
         
-        // Check if grade already exists
-        boolean exists = gradeService.gradeExists(studentId, subjectId, term, year);
-        
-        if (exists) {
-            // Update existing grade
-            Optional<Grade> existingGrade = gradeService.getGrade(studentId, subjectId, term, year);
-            if (existingGrade.isPresent()) {
-                Grade grade = existingGrade.get();
-                grade.setMarks(marks);
-                gradeService.updateGrade(grade.getId(), grade);
-            }
-        } else {
-            // Create new grade
-            Student student = studentService.getStudentById(studentId).orElse(null);
-            Subject subject = subjectService.getSubjectById(subjectId).orElse(null);
-            SchoolClass schoolClass = schoolClassService.getClassById(classId).orElse(null);
-            
-            if (student != null && subject != null && schoolClass != null) {
-                Grade grade = Grade.builder()
-                    .student(student)
-                    .subject(subject)
-                    .schoolClass(schoolClass)
-                    .term(term)
-                    .year(year)
-                    .marks(marks)
-                    .build();
-                gradeService.saveGrade(grade);
+        if (studentIds != null && scores != null) {
+            for (int i = 0; i < studentIds.size(); i++) {
+                Long studentId = studentIds.get(i);
+                Double score = scores.get(i);
+                
+                if (studentId != null && score != null) {
+                    // Check if grade already exists
+                    boolean exists = gradeService.gradeExists(studentId, subjectId, term, year);
+                    
+                    if (exists) {
+                        // Update existing grade
+                        Optional<Grade> existingGrade = gradeService.getGrade(studentId, subjectId, term, year);
+                        if (existingGrade.isPresent()) {
+                            Grade grade = existingGrade.get();
+                            grade.setMarks(score);
+                            gradeService.updateGrade(grade.getId(), grade);
+                        }
+                    } else {
+                        // Create new grade
+                        Student student = studentService.getStudentById(studentId).orElse(null);
+                        Subject subject = subjectService.getSubjectById(subjectId).orElse(null);
+                        SchoolClass schoolClass = schoolClassService.getClassById(classId).orElse(null);
+                        
+                        if (student != null && subject != null && schoolClass != null) {
+                            Grade grade = Grade.builder()
+                                .student(student)
+                                .subject(subject)
+                                .schoolClass(schoolClass)
+                                .term(term)
+                                .year(year)
+                                .marks(score)
+                                .build();
+                            gradeService.saveGrade(grade);
+                        }
+                    }
+                }
             }
         }
         

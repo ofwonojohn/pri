@@ -88,7 +88,7 @@ public class SchoolClassController {
         return "redirect:/classes/" + id;
     }
 
-    @PostMapping("/{id}/delete")
+    @GetMapping("/{id}/delete")
     public String deleteClass(@PathVariable Long id) {
         schoolClassService.deleteClass(id);
         return "redirect:/classes";

@@ -31,56 +31,84 @@
             <div class="container">
                 <div class="page-header">
                     <h1 class="page-title">Enter Marks</h1>
-                    <a th:href="@{/performance}" class="btn btn-secondary">Back</a>
+                    <a th:href="@{/performance}" class="btn btn-secondary">Back to Performance</a>
                 </div>
+                
+                <!-- Display Selected Options -->
+                <div class="info-box mb-3">
+                    <p><strong>Class:</strong> <span th:text="${schoolClass.className}">P.1</span></p>
+                    <p><strong>Subject:</strong> <span th:text="${subject.subjectName}">Mathematics</span></p>
+                    <p><strong>Term:</strong> <span th:text="${term}">Term 1</span></p>
+                    <p><strong>Year:</strong> <span th:text="${year}">2026</span></p>
+                </div>
+                
                 <div class="card">
-                    <form th:action="@{/performance/entry}" method="get" class="mb-3">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Select Class *</label>
-                                <select name="classId" class="form-control" onchange="this.form.submit()">
-                                    <option value="">-- Select Class --</option>
-                                    <option th:each="cls : ${classes}" th:value="${cls.id}" th:text="${cls.className}" th:selected="${selectedClass != null && selectedClass.id == cls.id}">P.1</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Select Subject *</label>
-                                <select name="subjectId" class="form-control" onchange="this.form.submit()">
-                                    <option value="">-- Select Subject --</option>
-                                    <option th:each="subj : ${subjects}" th:value="${subj.id}" th:text="${subj.subjectName}" th:selected="${selectedSubject != null && selectedSubject.id == subj.id}">Mathematics</option>
-                                </select>
-                            </div>
+                    <div class="card-header">
+                        <h2>Enter Marks for Students</h2>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(students)}" class="alert alert-warning">
+                            <p>No students found in this class. Please add students to this class first.</p>
                         </div>
-                    </form>
-                    <div th:if="${selectedClass != null && selectedSubject != null && students != null}" class="mt-3">
-                        <h3 class="mb-3">Enter Marks for <span th:text="${selectedClass.className}"></span> - <span th:text="${selectedSubject.subjectName}"></span></h3>
-                        <form th:action="@{/performance/saveMarks}" method="post">
-                            <input type="hidden" name="classId" th:value="${selectedClass.id}">
-                            <input type="hidden" name="subjectId" th:value="${selectedSubject.id}">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Student Name</th>
-                                        <th>Admission No</th>
-                                        <th>Score (0-100)</th>
-                                        <th>Grade</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="student, stat : ${students}">
-                                        <td th:text="${student.firstName + ' ' + student.lastName}">John Doe</td>
-                                        <td th:text="${student.admissionNumber}">ADM001</td>
-                                        <td><input type="number" th:name="${'marks[' + stat.index + '].score}" class="form-control" min="0" max="100" th:value="${existingMarks[student.id]}"></td>
-                                        <td><span class="badge" th:classappend="${existingMarks[student.id] != null && existingMarks[student.id] >= 50} ? 'badge-success' : 'badge-danger'" th:text="${existingMarks[student.id] != null ? (existingMarks[student.id] >= 90 ? 'D1' : existingMarks[student.id] >= 80 ? 'D2' : existingMarks[student.id] >= 70 ? 'C3' : existingMarks[student.id] >= 60 ? 'C4' : existingMarks[student.id] >= 50 ? 'C5' : 'F9') : '-'}">-</span></td>
-                                        <input type="hidden" th:name="${'marks[' + stat.index + '].studentId}" th:value="${student.id}">
-                                    </tr>
-                                    <tr th:if="${#lists.isEmpty(students)}">
-                                        <td colspan="4" class="text-center">No students found in this class</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <button type="submit" class="btn btn-primary mt-2" th:if="${!#lists.isEmpty(students)}">Save Marks</button>
-                        </form>
+                        
+                        <div th:if="${!#lists.isEmpty(students)}">
+                            <form th:action="@{/performance/save-grade}" method="post">
+                                <input type="hidden" name="classId" th:value="${schoolClass.id}">
+                                <input type="hidden" name="subjectId" th:value="${subject.id}">
+                                <input type="hidden" name="term" th:value="${term}">
+                                <input type="hidden" name="year" th:value="${year}">
+                                
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Student Name</th>
+                                            <th>Admission No</th>
+                                            <th>Marks (0-100)</th>
+                                            <th>Grade</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="student, stat : ${students}">
+                                            <td th:text="${stat.count}">1</td>
+                                            <td th:text="${student.firstName + ' ' + student.lastName}">John Doe</td>
+                                            <td th:text="${student.admissionNumber}">ADM001</td>
+                                            <td>
+                                                <input type="number" 
+                                                       th:name="scores" 
+                                                       class="form-control" 
+                                                       min="0" max="100" 
+                                                       step="0.1"
+                                                       th:value="${existingGrades[student.id] != null ? existingGrades[student.id].marks : ''}"
+                                                       placeholder="Enter marks">
+                                                <input type="hidden" th:name="studentIds" th:value="${student.id}">
+                                            </td>
+                                            <td>
+                                                <span th:if="${existingGrades[student.id] != null}" 
+                                                      class="badge"
+                                                      th:classappend="${existingGrades[student.id].marks >= 90} ? 'badge-success' : (${existingGrades[student.id].marks >= 80} ? 'badge-info' : (${existingGrades[student.id].marks >= 70} ? 'badge-primary' : (${existingGrades[student.id].marks >= 60} ? 'badge-warning' : (${existingGrades[student.id].marks >= 50} ? 'badge-secondary' : 'badge-danger')))"
+                                                      th:text="${existingGrades[student.id].grade}">D1</span>
+                                                <span th:if="${existingGrades[student.id] == null}" class="badge badge-secondary">-</span>
+                                            </td>
+                                            <td>
+                                                <span th:if="${existingGrades[student.id] != null}" class="text-success"><i class="fas fa-check"></i> Entered</span>
+                                                <span th:if="${existingGrades[student.id] == null}" class="text-muted"><i class="fas fa-minus"></i> Pending</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                
+                                <div class="form-group mt-3">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Save Marks
+                                    </button>
+                                    <a th:href="@{/performance/entry(classId=${schoolClass.id}, subjectId=${subject.id}, term=${term}, year=${year})}" class="btn btn-secondary">
+                                        <i class="fas fa-refresh"></i> Refresh
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
