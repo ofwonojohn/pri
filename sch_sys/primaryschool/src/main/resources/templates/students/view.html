@@ -8,46 +8,61 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <header class="header"><div class="header-content"><div class="school-name"><i class="fas fa-school"></i><span>Primary School Management System</span></div></div></header>
+    <header class="header">
+        <div class="header-content">
+            <div class="school-name">
+                <i class="fas fa-school"></i>
+                <span>Primary School Management System</span>
+            </div>
+        </div>
+    </header>
     <div class="nav-container">
-        <nav class="sidebar"><ul class="sidebar-menu">
-            <li><a th:href="@{/}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
-            <li><a th:href="@{/students}" class="active"><i class="fas fa-user-graduate"></i><span>Students</span></a></li>
-            <li><a th:href="@{/teachers}"><i class="fas fa-chalkboard-teacher"></i><span>Teachers</span></a></li>
-            <li><a th:href="@{/classes}"><i class="fas fa-door-open"></i><span>Classes</span></a></li>
-            <li><a th:href="@{/subjects}"><i class="fas fa-book"></i><span>Subjects</span></a></li>
-            <li><a th:href="@{/performance}"><i class="fas fa-chart-line"></i><span>Performance</span></a></li>
-            <li><a th:href="@{/reports}"><i class="fas fa-file-alt"></i><span>Reports</span></a></li>
-        </ul></nav>
-        <main class="main-content"><div class="container">
-            <div class="page-header">
-                <h1 class="page-title">Student Profile</h1>
-                <div class="d-flex gap-2">
-                    <a th:href="@{/students/{id}/edit(id=${student.id})}" class="btn btn-primary"><i class="fas fa-edit"></i> Edit</a>
-                    <a th:href="@{/students}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</a>
+        <nav class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a th:href="@{/}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                <li><a th:href="@{/students}" class="active"><i class="fas fa-user-graduate"></i><span>Students</span></a></li>
+                <li><a th:href="@{/teachers}"><i class="fas fa-chalkboard-teacher"></i><span>Teachers</span></a></li>
+                <li><a th:href="@{/classes}"><i class="fas fa-door-open"></i><span>Classes</span></a></li>
+                <li><a th:href="@{/subjects}"><i class="fas fa-book"></i><span>Subjects</span></a></li>
+                <li><a th:href="@{/performance}"><i class="fas fa-chart-line"></i><span>Performance</span></a></li>
+                <li><a th:href="@{/reports}"><i class="fas fa-file-alt"></i><span>Reports</span></a></li>
+            </ul>
+        </nav>
+        <main class="main-content">
+            <div class="container">
+                <div class="page-header">
+                    <h1 class="page-title">Student Profile</h1>
+                    <div class="d-flex gap-2">
+                        <a th:href="@{/students/{id}/edit(id=${student.id})}" class="btn btn-primary"><i class="fas fa-edit"></i> Edit</a>
+                        <a th:href="@{/students}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</a>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem;">
+                    <div class="card">
+                        <div class="card-header"><h2 class="card-title">Student Information</h2></div>
+                        <table class="table">
+                            <tr><th>Admission Number</th><td th:text="${student.admissionNumber}">ADM001</td></tr>
+                            <tr><th>Full Name</th><td th:text="${student.firstName + ' ' + student.lastName}">John Doe</td></tr>
+                            <tr><th>Gender</th><td th:text="${student.gender}">Male</td></tr>
+                            <tr><th>Date of Birth</th><td th:text="${student.dateOfBirth}">2015-01-15</td></tr>
+                            <tr><th>Class</th><td><span class="badge badge-primary" th:text="${student.schoolClass?.className}">P.1</span></td></tr>
+                        </table>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h2 class="card-title">Parent/Guardian Information</h2></div>
+                        <table class="table">
+                            <tr><th>Parent Name</th><td th:text="${student.parentName}">Parent</td></tr>
+                            <tr><th>Parent Phone</th><td th:text="${student.parentPhone}">0772123456</td></tr>
+                            <tr><th>Parent Email</th><td th:text="${student.parentEmail}">parent@email.com</td></tr>
+                            <tr><th>Address</th><td th:text="${student.address}">Address</td></tr>
+                        </table>
+                    </div>
                 </div>
             </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem;">
-                <div class="card"><div class="card-header"><h2 class="card-title">Student Information</h2></div>
-                    <table class="table">
-                        <tr><th>Admission Number</th><td th:text="${student.admissionNumber}">ADM001</td></tr>
-                        <tr><th>Full Name</th><td th:text="${student.firstName} + ' ' + ${student.lastName}">John Doe</td></tr>
-                        <tr><th>Gender</th><td th:text="${student.gender}">Male</td></tr>
-                        <tr><th>Date of Birth</th><td th:text="${student.dateOfBirth}">2015-01-15</td></tr>
-                        <tr><th>Class</th><td><span class="badge badge-primary" th:text="${student.schoolClass?.className}">P.1</span></td></tr>
-                    </table>
-                </div>
-                <div class="card"><div class="card-header"><h2 class="card-title">Parent/Guardian Information</h2></div>
-                    <table class="table">
-                        <tr><th>Parent Name</th><td th:text="${student.parentName}">Parent</td></tr>
-                        <tr><th>Parent Phone</th><td th:text="${student.parentPhone}">0772123456</td></tr>
-                        <tr><th>Parent Email</th><td th:text="${student.parentEmail}">parent@email.com</td></tr>
-                        <tr><th>Address</th><td th:text="${student.address}">Address</td></tr>
-                    </table>
-                </div>
-            </div>
-        </div></main>
+        </main>
     </div>
-    <footer class="footer"><p>&copy; 2026 Primary School Management System. All Rights Reserved.</p></footer>
+    <footer class="footer">
+        <p>&copy; 2026 Primary School Management System. All Rights Reserved.</p>
+    </footer>
 </body>
 </html>
