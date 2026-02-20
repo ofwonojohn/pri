@@ -34,9 +34,5 @@ public class SchoolClass {
 
     @OneToMany(mappedBy = "schoolClass", cascade = CascadeType.ALL)
     @Builder.Default
-    private Set<Subject> subjects = new HashSet<>();
-
-    @OneToMany(mappedBy = "schoolClass", cascade = CascadeType.ALL)
-    @Builder.Default
     private Set<Grade> grades = new HashSet<>();
 }
