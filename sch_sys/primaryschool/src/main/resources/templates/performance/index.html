@@ -32,15 +32,52 @@
                 <div class="page-header">
                     <h1 class="page-title">Performance Management</h1>
                 </div>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <i class="fas fa-edit stat-icon"></i>
-                        <div class="stat-info">
-                            <h3>Enter Marks</h3>
-                            <p>Record student marks</p>
-                            <a th:href="@{/performance/entry}" class="btn btn-primary mt-2">Enter Marks</a>
-                        </div>
+                
+                <!-- Selection Form for Enter Marks -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-edit"></i> Enter Marks</h2>
                     </div>
+                    <div class="card-body">
+                        <form th:action="@{/performance/entry}" method="get" class="form-horizontal">
+                            <div class="form-group">
+                                <label for="classId" class="form-label">Select Class:</label>
+                                <select id="classId" name="classId" class="form-control" required>
+                                    <option value="">-- Select Class --</option>
+                                    <option th:each="cls : ${classes}" th:value="${cls.id}" th:text="${cls.className}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="subjectId" class="form-label">Select Subject:</label>
+                                <select id="subjectId" name="subjectId" class="form-control" required>
+                                    <option value="">-- Select Subject --</option>
+                                    <option th:each="subj : ${subjects}" th:value="${subj.id}" th:text="${subj.subjectName}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="term" class="form-label">Select Term:</label>
+                                <select id="term" name="term" class="form-control" required>
+                                    <option value="Term 1">Term 1</option>
+                                    <option value="Term 2">Term 2</option>
+                                    <option value="Term 3">Term 3</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="year" class="form-label">Select Year:</label>
+                                <select id="year" name="year" class="form-control" required>
+                                    <option th:each="yr : ${years}" th:value="${yr}" th:text="${yr}" th:selected="${yr == currentYear}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-edit"></i> Enter Marks
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="stats-grid mt-4">
                     <div class="stat-card">
                         <i class="fas fa-list-alt stat-icon"></i>
                         <div class="stat-info">

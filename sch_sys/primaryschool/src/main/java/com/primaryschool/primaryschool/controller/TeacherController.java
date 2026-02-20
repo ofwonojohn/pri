@@ -110,7 +110,7 @@ public class TeacherController {
         return "redirect:/teachers/" + id;
     }
 
-    @PostMapping("/{id}/delete")
+    @GetMapping("/{id}/delete")
     public String deleteTeacher(@PathVariable Long id) {
         teacherService.deleteTeacher(id);
         return "redirect:/teachers";

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -83,7 +84,12 @@ public class GradeService {
     }
 
     public List<Integer> getAllYears() {
-        return gradeRepository.findAllDistinctYears();
+        List<Integer> years = gradeRepository.findAllDistinctYears();
+        if (years.isEmpty()) {
+            years = new ArrayList<>();
+            years.add(java.time.LocalDate.now().getYear());
+        }
+        return years;
     }
 
     /**
