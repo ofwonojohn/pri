@@ -77,7 +77,7 @@ public class SubjectController {
         return "redirect:/subjects/" + id;
     }
 
-    @PostMapping("/{id}/delete")
+    @GetMapping("/{id}/delete")
     public String deleteSubject(@PathVariable Long id) {
         subjectService.deleteSubject(id);
         return "redirect:/subjects";
