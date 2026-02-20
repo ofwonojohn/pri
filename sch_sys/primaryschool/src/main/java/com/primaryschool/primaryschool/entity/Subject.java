@@ -28,9 +28,14 @@ public class Subject {
     @Builder.Default
     private Boolean isActive = true;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "class_id")
-    private SchoolClass schoolClass;
+    @ManyToMany
+    @JoinTable(
+        name = "class_subjects",
+        joinColumns = @JoinColumn(name = "subject_id"),
+        inverseJoinColumns = @JoinColumn(name = "class_id")
+    )
+    @Builder.Default
+    private Set<SchoolClass> classes = new HashSet<>();
 
     @ManyToMany(mappedBy = "subjects")
     @Builder.Default
