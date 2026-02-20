@@ -21,9 +21,9 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
     @Query("SELECT s FROM Subject s WHERE s.isActive = true ORDER BY s.subjectName")
     List<Subject> findAllActiveSubjects();
 
-    @Query("SELECT s FROM Subject s WHERE s.schoolClass.id = :classId AND s.isActive = true")
+    @Query("SELECT s FROM Subject s JOIN s.classes c WHERE c.id = :classId AND s.isActive = true")
     List<Subject> findSubjectsByClassId(@Param("classId") Long classId);
 
-    @Query("SELECT s FROM Subject s WHERE s.schoolClass IS NULL AND s.isActive = true")
+    @Query("SELECT s FROM Subject s WHERE s.isActive = true AND s.classes IS EMPTY")
     List<Subject> findSubjectsWithoutClass();
 }
