@@ -68,7 +68,7 @@ public class SubjectService {
         SchoolClass schoolClass = schoolClassRepository.findById(classId)
             .orElseThrow(() -> new RuntimeException("Class not found"));
 
-        subject.setSchoolClass(schoolClass);
+        subject.getClasses().add(schoolClass);
         return subjectRepository.save(subject);
     }
 
