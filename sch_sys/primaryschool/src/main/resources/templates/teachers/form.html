@@ -36,19 +36,15 @@
                     <form th:action="${teacher.id != null} ? @{/teachers/{id}/update(id=${teacher.id})} : @{/teachers/save}" th:object="${teacher}" method="post">
                         <div class="form-row">
                             <div class="form-group">
-                                <label class="form-label">Employee Number *</label>
-                                <input type="text" th:field="*{employeeNumber}" class="form-control" placeholder="EMP001" required>
-                            </div>
-                            <div class="form-group">
                                 <label class="form-label">First Name *</label>
                                 <input type="text" th:field="*{firstName}" class="form-control" placeholder="John" required>
                             </div>
-                        </div>
-                        <div class="form-row">
                             <div class="form-group">
                                 <label class="form-label">Last Name *</label>
                                 <input type="text" th:field="*{lastName}" class="form-control" placeholder="Doe" required>
                             </div>
+                        </div>
+                        <div class="form-row">
                             <div class="form-group">
                                 <label class="form-label">Gender *</label>
                                 <select th:field="*{gender}" class="form-control" required>
@@ -56,6 +52,10 @@
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
                                 </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Date of Birth</label>
+                                <input type="date" th:field="*{dateOfBirth}" class="form-control">
                             </div>
                         </div>
                         <div class="form-row">
@@ -65,27 +65,30 @@
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Phone</label>
-                                <input type="text" th:field="*{phone}" class="form-control" placeholder="+256xxxxxxxxx">
+                                <input type="text" th:field="*{phoneNumber}" class="form-control" placeholder="+256xxxxxxxxx">
                             </div>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Subjects</label>
-                                <div class="checkbox-group">
-                                    <label th:each="subj : ${allSubjects}" style="display:inline-block;margin-right:15px;">
-                                        <input type="checkbox" th:field="*{subjects}" th:value="${subj.id}" style="margin-right:5px;">
-                                        <span th:text="${subj.subjectName}">Math</span>
-                                    </label>
-                                </div>
-                            </div>
+                        <div class="form-group">
+                            <label class="form-label">Address</label>
+                            <input type="text" th:field="*{address}" class="form-control" placeholder="Address">
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Class Teacher</label>
-                                <select th:field="*{classTeacher}" class="form-control">
-                                    <option value="">Select Class (Optional)</option>
-                                    <option th:each="cls : ${allClasses}" th:value="${cls.id}" th:text="${cls.className}">P.1</option>
-                                </select>
+                        <div class="form-group">
+                            <label class="form-label">Qualification</label>
+                            <select th:field="*{qualification}" class="form-control">
+                                <option value="">Select Qualification</option>
+                                <option value="Certificate">Certificate</option>
+                                <option value="Diploma">Diploma</option>
+                                <option value="Degree">Degree</option>
+                                <option value="Masters">Masters</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Subjects</label>
+                            <div class="checkbox-group">
+                                <label th:each="subj : ${allSubjects}" style="display:inline-block;margin-right:15px;">
+                                    <input type="checkbox" th:field="*{subjects}" th:value="${subj.id}" style="margin-right:5px;">
+                                    <span th:text="${subj.subjectName}">Math</span>
+                                </label>
                             </div>
                         </div>
                         <div class="d-flex gap-2 mt-3">
