@@ -3,6 +3,7 @@ package com.primaryschool.primaryschool.controller;
 import com.primaryschool.primaryschool.dto.MarkEntry;
 import com.primaryschool.primaryschool.entity.*;
 import com.primaryschool.primaryschool.service.*;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -105,18 +106,63 @@ public class GradeController {
     public String saveGrades(@RequestParam Long classId,
                             @RequestParam String term,
                             @RequestParam Integer year,
-                            @RequestParam(required = false) List<Long> studentIds,
-                            @RequestParam(required = false) List<Long> subjectIds,
-                            @RequestParam(required = false) List<Double> marks) {
+                            HttpServletRequest request) {
+        
+        // Get all parameter values
+        Map<String, String[]> paramMap = request.getParameterMap();
+        
+        // Collect studentIds, subjectIds, and marks
+        List<Long> studentIds = new ArrayList<>();
+        List<Long> subjectIds = new ArrayList<>();
+        List<Double> marks = new ArrayList<>();
+        
+        // Parse studentIds
+        String[] studentIdParams = paramMap.get("studentIds");
+        if (studentIdParams != null) {
+            for (String s : studentIdParams) {
+                try {
+                    studentIds.add(Long.parseLong(s));
+                } catch (NumberFormatException e) {
+                    // ignore
+                }
+            }
+        }
+        
+        // Parse subjectIds
+        String[] subjectIdParams = paramMap.get("subjectIds");
+        if (subjectIdParams != null) {
+            for (String s : subjectIdParams) {
+                try {
+                    subjectIds.add(Long.parseLong(s));
+                } catch (NumberFormatException e) {
+                    // ignore
+                }
+            }
+        }
+        
+        // Parse marks
+        String[] marksParams = paramMap.get("marks");
+        if (marksParams != null) {
+            for (String s : marksParams) {
+                try {
+                    if (s != null && !s.trim().isEmpty()) {
+                        marks.add(Double.parseDouble(s));
+                    }
+                } catch (NumberFormatException e) {
+                    // ignore
+                }
+            }
+        }
         
         // Debug logging
-        System.out.println("Saving grades - studentIds: " + studentIds + ", subjectIds: " + subjectIds + ", marks: " + marks);
+        System.out.println("Saving grades - studentIds: " + studentIds.size() + ", subjectIds: " + subjectIds.size() + ", marks: " + marks.size());
         
-        if (studentIds != null && !studentIds.isEmpty() && 
-            subjectIds != null && !subjectIds.isEmpty() && 
-            marks != null && !marks.isEmpty()) {
+        if (!studentIds.isEmpty() && !subjectIds.isEmpty() && !marks.isEmpty()) {
             
-            for (int i = 0; i < studentIds.size(); i++) {
+            // Find the minimum size to iterate
+            int minSize = Math.min(Math.min(studentIds.size(), subjectIds.size()), marks.size());
+            
+            for (int i = 0; i < minSize; i++) {
                 Long studentId = studentIds.get(i);
                 Long subjectId = subjectIds.get(i);
                 Double score = marks.get(i);
@@ -248,34 +294,47 @@ public class GradeController {
     }
 
     @GetMapping("/class")
-    public String viewClassPerformance(@RequestParam Long classId,
+    public String viewClassPerformance(@RequestParam(required = false) Long classId,
                                         @RequestParam(required = false, defaultValue = "Term 1") String term,
                                         @RequestParam(required = false, defaultValue = "2026") Integer year,
                                         Model model) {
         
-        Optional<SchoolClass> schoolClass = schoolClassService.getClassById(classId);
-        if (schoolClass.isPresent()) {
-            List<Map<String, Object>> performanceList = gradeService.getClassPerformance(classId, term, year);
-            
-            model.addAttribute("schoolClass", schoolClass.get());
-            model.addAttribute("performanceList", performanceList);
-            model.addAttribute("term", term);
-            model.addAttribute("year", year);
-            
-            // Get top 3
-            List<Map<String, Object>> top3 = performanceList.stream().limit(3).toList();
-            model.addAttribute("top3", top3);
-            
-            List<Integer> years = gradeService.getAllYears();
-            if (years.isEmpty()) {
-                years = List.of(LocalDate.now().getYear());
+        model.addAttribute("classes", schoolClassService.getAllClasses());
+        
+        List<Integer> years = gradeService.getAllYears();
+        if (years.isEmpty()) {
+            years = List.of(LocalDate.now().getYear());
+        }
+        model.addAttribute("years", years);
+        
+        if (classId != null) {
+            Optional<SchoolClass> schoolClass = schoolClassService.getClassById(classId);
+            if (schoolClass.isPresent()) {
+                List<Map<String, Object>> performanceList = gradeService.getClassPerformance(classId, term, year);
+                
+                model.addAttribute("selectedClass", schoolClass.get());
+                model.addAttribute("studentResults", performanceList);
+                model.addAttribute("term", term);
+                model.addAttribute("year", year);
+                
+                // Get top 3
+                List<Map<String, Object>> top3 = performanceList.stream().limit(3).toList();
+                model.addAttribute("top3", top3);
+                
+                // Calculate mean score
+                if (!performanceList.isEmpty()) {
+                    double sum = performanceList.stream()
+                        .mapToDouble(p -> (Double) p.get("averageScore"))
+                        .sum();
+                    double mean = sum / performanceList.size();
+                    model.addAttribute("meanScore", Math.round(mean * 100.0) / 100.0);
+                } else {
+                    model.addAttribute("meanScore", 0.0);
+                }
             }
-            model.addAttribute("years", years);
-            
-            return "performance/class";
         }
         
-        return "redirect:/classes";
+        return "performance/class";
     }
 
     @GetMapping("/report/class")

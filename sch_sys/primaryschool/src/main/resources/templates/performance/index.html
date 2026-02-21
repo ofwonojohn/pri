@@ -113,7 +113,35 @@
                         <div class="stat-info">
                             <h3>Class Performance</h3>
                             <p>View class results</p>
-                            <a th:href="@{/performance/class}" class="btn btn-primary mt-2">View Classes</a>
+                            <form th:action="@{/performance/class}" method="get" class="mt-2">
+                                <div class="form-row">
+                                    <div class="form-group" style="margin-bottom: 5px;">
+                                        <select name="classId" class="form-control" required style="padding: 5px; font-size: 12px;">
+                                            <option value="">-- Select Class --</option>
+                                            <option th:each="cls : ${classes}" th:value="${cls.id}" th:text="${cls.className}"></option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group" style="margin-bottom: 5px;">
+                                        <select name="term" class="form-control" required style="padding: 5px; font-size: 12px;">
+                                            <option value="Term 1">Term 1</option>
+                                            <option value="Term 2">Term 2</option>
+                                            <option value="Term 3">Term 3</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group" style="margin-bottom: 5px;">
+                                        <select name="year" class="form-control" required style="padding: 5px; font-size: 12px;">
+                                            <option th:each="yr : ${years}" th:value="${yr}" th:text="${yr}" th:selected="${yr == currentYear}"></option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-sm" style="margin-top: 5px;">
+                                    <i class="fas fa-eye"></i> View Class
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
