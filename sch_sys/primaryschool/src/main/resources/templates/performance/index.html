@@ -48,13 +48,6 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="subjectId" class="form-label">Select Subject:</label>
-                                <select id="subjectId" name="subjectId" class="form-control" required>
-                                    <option value="">-- Select Subject --</option>
-                                    <option th:each="subj : ${subjects}" th:value="${subj.id}" th:text="${subj.subjectName}"></option>
-                                </select>
-                            </div>
-                            <div class="form-group">
                                 <label for="term" class="form-label">Select Term:</label>
                                 <select id="term" name="term" class="form-control" required>
                                     <option value="Term 1">Term 1</option>

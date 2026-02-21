@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/performance")
@@ -46,27 +47,51 @@ public class GradeController {
 
     @GetMapping("/entry")
     public String enterMarks(@RequestParam Long classId, 
-                             @RequestParam Long subjectId,
                              @RequestParam String term,
                              @RequestParam Integer year,
                              Model model) {
         
         List<Student> students = studentService.getStudentsByClass(classId);
-        Optional<Subject> subject = subjectService.getSubjectById(subjectId);
         Optional<SchoolClass> schoolClass = schoolClassService.getClassById(classId);
         
-        if (subject.isPresent() && schoolClass.isPresent()) {
+        if (schoolClass.isPresent()) {
             model.addAttribute("students", students);
-            model.addAttribute("subject", subject.get());
             model.addAttribute("schoolClass", schoolClass.get());
             model.addAttribute("term", term);
             model.addAttribute("year", year);
             
-            // Check for existing grades
-            Map<Long, Grade> existingGrades = new HashMap<>();
+            // Get all active subjects
+            List<Subject> allSubjects = subjectService.getActiveSubjects();
+            
+            // Filter subjects based on class level
+            // P.1-P.3 (classLevel 1-3): All subjects
+            // P.4-P.7 (classLevel 4-7): Only English, Mathematics, Science, Social Studies
+            List<Subject> subjects;
+            Integer classLevel = schoolClass.get().getClassLevel();
+            
+            if (classLevel != null && classLevel >= 4) {
+                // P.4 to P.7 - only core subjects
+                List<String> coreSubjects = List.of("English", "Mathematics", "Science", "Social Studies");
+                subjects = allSubjects.stream()
+                    .filter(s -> coreSubjects.stream()
+                        .anyMatch(cs -> s.getSubjectName().equalsIgnoreCase(cs)))
+                    .collect(Collectors.toList());
+            } else {
+                // P.1 to P.3 - all subjects
+                subjects = allSubjects;
+            }
+            
+            model.addAttribute("subjects", subjects);
+            
+            // Check for existing grades - Map: studentId -> (subjectId -> Grade)
+            Map<Long, Map<Long, Grade>> existingGrades = new HashMap<>();
             for (Student student : students) {
-                Optional<Grade> grade = gradeService.getGrade(student.getId(), subjectId, term, year);
-                grade.ifPresent(g -> existingGrades.put(student.getId(), g));
+                Map<Long, Grade> studentGrades = new HashMap<>();
+                for (Subject subj : subjects) {
+                    Optional<Grade> grade = gradeService.getGrade(student.getId(), subj.getId(), term, year);
+                    grade.ifPresent(g -> studentGrades.put(subj.getId(), g));
+                }
+                existingGrades.put(student.getId(), studentGrades);
             }
             model.addAttribute("existingGrades", existingGrades);
             
@@ -76,20 +101,21 @@ public class GradeController {
         return "redirect:/performance";
     }
 
-    @PostMapping("/save-grade")
+    @PostMapping("/save-grades")
     public String saveGrades(@RequestParam Long classId,
-                            @RequestParam Long subjectId,
                             @RequestParam String term,
                             @RequestParam Integer year,
-                            @RequestParam List<Long> studentIds,
-                            @RequestParam List<Double> scores) {
+                            @RequestParam(required = false) List<Long> studentIds,
+                            @RequestParam(required = false) List<Long> subjectIds,
+                            @RequestParam(required = false) List<Double> marks) {
         
-        if (studentIds != null && scores != null) {
+        if (studentIds != null && subjectIds != null && marks != null) {
             for (int i = 0; i < studentIds.size(); i++) {
                 Long studentId = studentIds.get(i);
-                Double score = scores.get(i);
+                Long subjectId = subjectIds.get(i);
+                Double score = marks.get(i);
                 
-                if (studentId != null && score != null) {
+                if (studentId != null && subjectId != null && score != null) {
                     // Check if grade already exists
                     boolean exists = gradeService.gradeExists(studentId, subjectId, term, year);
                     
@@ -123,7 +149,7 @@ public class GradeController {
             }
         }
         
-        return "redirect:/performance/entry?classId=" + classId + "&subjectId=" + subjectId + "&term=" + term + "&year=" + year;
+        return "redirect:/performance/entry?classId=" + classId + "&term=" + term + "&year=" + year;
     }
 
     @GetMapping("/student/{studentId}")
