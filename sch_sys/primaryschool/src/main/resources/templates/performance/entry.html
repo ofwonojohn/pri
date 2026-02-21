@@ -11,12 +11,20 @@
             overflow-x: auto;
         }
         .marks-table th, .marks-table td {
-            min-width: 80px;
+            min-width: 70px;
             text-align: center;
         }
         .marks-table input {
-            width: 70px;
+            width: 60px;
             text-align: center;
+        }
+        .marks-table .student-info {
+            text-align: left;
+            min-width: 150px;
+        }
+        .total-cell {
+            font-weight: bold;
+            background-color: #f8f9fa;
         }
     </style>
 </head>
@@ -76,8 +84,9 @@
                                         <tr>
                                             <th rowspan="2" style="vertical-align: middle;">#</th>
                                             <th rowspan="2" style="vertical-align: middle;">Student Name</th>
-                                            <th rowspan="2" style="vertical-align: middle;">Admission No</th>
+                                            <th rowspan="2" style="vertical-align: middle;">Adm No.</th>
                                             <th th:colspan="${subjects.size()}" style="text-align: center;">Subjects</th>
+                                            <th rowspan="2" style="vertical-align: middle; background-color: #e9ecef;">Total</th>
                                         </tr>
                                         <tr>
                                             <th th:each="subj : ${subjects}" style="text-align: center;" th:text="${subj.subjectName}">English</th>
@@ -86,7 +95,7 @@
                                     <tbody>
                                         <tr th:each="student, rowStat : ${students}">
                                             <td th:text="${rowStat.count}">1</td>
-                                            <td style="text-align: left;" th:text="${student.firstName + ' ' + student.lastName}">John Doe</td>
+                                            <td class="student-info" th:text="${student.firstName + ' ' + student.lastName}">John Doe</td>
                                             <td th:text="${student.admissionNumber}">ADM001</td>
                                             <td th:each="subj, subjStat : ${subjects}">
                                                 <!-- Hidden fields for student and subject IDs -->
@@ -96,11 +105,16 @@
                                                 <!-- Mark input -->
                                                 <input type="number" 
                                                        th:name="${'marks[' + (rowStat.index * subjects.size() + subjStat.index) + ']'}" 
-                                                       class="form-control" 
+                                                       class="form-control mark-input" 
                                                        min="0" max="100" 
                                                        step="0.1"
-                                                       th:value="${existingGrades[student.id] != null && existingGrades[student.id][subj.id] != null ? existingGrades[student.id][subj.id].marks : ''}"
+                                                       th:attr="data-row=${rowStat.index}"
+                                                       th:value="${existingGrades[student.id] != null and existingGrades[student.id][subj.id] != null ? existingGrades[student.id][subj.id].marks : ''}"
                                                        placeholder="-">
+                                            </td>
+                                            <!-- Total column -->
+                                            <td class="total-cell">
+                                                <span class="row-total" th:id="${'total-' + rowStat.index}">0</span>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -124,5 +138,36 @@
     <footer class="footer">
         <p>&copy; 2026 Primary School Management System. All Rights Reserved.</p>
     </footer>
+    
+    <!-- JavaScript to calculate totals -->
+    <script>
+        function calculateTotals() {
+            var rows = document.querySelectorAll('tr[data-row]');
+            rows.forEach(function(row, index) {
+                var inputs = document.querySelectorAll('.mark-input[data-row="' + index + '"]');
+                var total = 0;
+                inputs.forEach(function(input) {
+                    var value = parseFloat(input.value);
+                    if (!isNaN(value)) {
+                        total += value;
+                    }
+                });
+                var totalElement = document.getElementById('total-' + index);
+                if (totalElement) {
+                    totalElement.textContent = total.toFixed(1);
+                }
+            });
+        }
+        
+        // Add event listeners to all mark inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            var inputs = document.querySelectorAll('.mark-input');
+            inputs.forEach(function(input) {
+                input.addEventListener('input', calculateTotals);
+            });
+            // Calculate initial totals
+            calculateTotals();
+        });
+    </script>
 </body>
 </html>

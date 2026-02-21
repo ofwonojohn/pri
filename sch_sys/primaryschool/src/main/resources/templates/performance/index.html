@@ -34,7 +34,7 @@
                 </div>
                 
                 <!-- Selection Form for Enter Marks -->
-                <div class="card">
+                <div class="card mb-4">
                     <div class="card-header">
                         <h2><i class="fas fa-edit"></i> Enter Marks</h2>
                     </div>
@@ -64,6 +64,43 @@
                             <div class="form-group">
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-edit"></i> Enter Marks
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Selection Form for View Marks -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-eye"></i> View Marks</h2>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/performance/view}" method="get" class="form-horizontal">
+                            <div class="form-group">
+                                <label for="viewClassId" class="form-label">Select Class:</label>
+                                <select id="viewClassId" name="classId" class="form-control" required>
+                                    <option value="">-- Select Class --</option>
+                                    <option th:each="cls : ${classes}" th:value="${cls.id}" th:text="${cls.className}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="viewTerm" class="form-label">Select Term:</label>
+                                <select id="viewTerm" name="term" class="form-control" required>
+                                    <option value="Term 1">Term 1</option>
+                                    <option value="Term 2">Term 2</option>
+                                    <option value="Term 3">Term 3</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="viewYear" class="form-label">Select Year:</label>
+                                <select id="viewYear" name="year" class="form-control" required>
+                                    <option th:each="yr : ${years}" th:value="${yr}" th:text="${yr}" th:selected="${yr == currentYear}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-info">
+                                    <i class="fas fa-eye"></i> View Marks
                                 </button>
                             </div>
                         </form>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>View Marks</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .marks-table {
+            width: 100%;
+            overflow-x: auto;
+        }
+        .marks-table th, .marks-table td {
+            min-width: 70px;
+            text-align: center;
+        }
+        .marks-table .student-info {
+            text-align: left;
+            min-width: 150px;
+        }
+        .total-cell {
+            font-weight: bold;
+            background-color: #e9ecef;
+        }
+        .no-marks {
+            color: #999;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="school-name">
+                <i class="fas fa-school"></i>
+                <span>Primary School Management System</span>
+            </div>
+        </div>
+    </header>
+    <div class="nav-container">
+        <nav class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a th:href="@{/}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                <li><a th:href="@{/students}"><i class="fas fa-user-graduate"></i><span>Students</span></a></li>
+                <li><a th:href="@{/teachers}"><i class="fas fa-chalkboard-teacher"></i><span>Teachers</span></a></li>
+                <li><a th:href="@{/classes}"><i class="fas fa-door-open"></i><span>Classes</span></a></li>
+                <li><a th:href="@{/subjects}"><i class="fas fa-book"></i><span>Subjects</span></a></li>
+                <li><a th:href="@{/performance}" class="active"><i class="fas fa-chart-line"></i><span>Performance</span></a></li>
+                <li><a th:href="@{/reports}"><i class="fas fa-file-alt"></i><span>Reports</span></a></li>
+            </ul>
+        </nav>
+        <main class="main-content">
+            <div class="container">
+                <div class="page-header">
+                    <h1 class="page-title">View Marks</h1>
+                    <a th:href="@{/performance}" class="btn btn-secondary">Back to Performance</a>
+                </div>
+                
+                <!-- Display Selected Options -->
+                <div class="info-box mb-3">
+                    <p><strong>Class:</strong> <span th:text="${schoolClass.className}">P.1</span></p>
+                    <p><strong>Term:</strong> <span th:text="${term}">Term 1</span></p>
+                    <p><strong>Year:</strong> <span th:text="${year}">2026</span></p>
+                    <p><strong>Subjects:</strong> <span th:text="${subjects.size()}">4</span> subjects</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Student Marks</h2>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(students)}" class="alert alert-warning">
+                            <p>No students found in this class.</p>
+                        </div>
+                        
+                        <div th:if="${!#lists.isEmpty(students)}" class="marks-table">
+                            <table class="table table-striped table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2" style="vertical-align: middle;">#</th>
+                                        <th rowspan="2" style="vertical-align: middle;">Student Name</th>
+                                        <th rowspan="2" style="vertical-align: middle;">Adm No.</th>
+                                        <th th:colspan="${subjects.size()}" style="text-align: center;">Subjects</th>
+                                        <th rowspan="2" style="vertical-align: middle; background-color: #e9ecef;">Total</th>
+                                        <th rowspan="2" style="vertical-align: middle; background-color: #e9ecef;">Average</th>
+                                    </tr>
+                                    <tr>
+                                        <th th:each="subj : ${subjects}" style="text-align: center;" th:text="${subj.subjectName}">English</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="student, rowStat : ${students}">
+                                        <td th:text="${rowStat.count}">1</td>
+                                        <td class="student-info" th:text="${student.firstName + ' ' + student.lastName}">John Doe</td>
+                                        <td th:text="${student.admissionNumber}">ADM001</td>
+                                        <td th:each="subj : ${subjects}">
+                                            <span th:if="${existingGrades[student.id] != null and existingGrades[student.id][subj.id] != null}" 
+                                                  th:text="${existingGrades[student.id][subj.id].marks}">85.0</span>
+                                            <span th:if="${existingGrades[student.id] == null or existingGrades[student.id][subj.id] == null}" 
+                                                  class="no-marks">-</span>
+                                        </td>
+                                        <!-- Calculate total and average for each row -->
+                                        <td class="total-cell" th:with="total=${T(java.util.Collections).max({${{0}}})}">
+                                            <th:block th:with="total=0">
+                                                <span th:each="subj : ${subjects}" th:with="total=${existingGrades[student.id] != null and existingGrades[student.id][subj.id] != null ? total + existingGrades[student.id][subj.id].marks : total}"></span>
+                                                <span th:text="${total}">0</span>
+                                            </th:block>
+                                        </td>
+                                        <td class="total-cell">
+                                            <span class="no-marks">-</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <footer class="footer">
+        <p>&copy; 2026 Primary School Management System. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>

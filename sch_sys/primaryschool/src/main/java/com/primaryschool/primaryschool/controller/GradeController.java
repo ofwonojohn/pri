@@ -109,47 +109,116 @@ public class GradeController {
                             @RequestParam(required = false) List<Long> subjectIds,
                             @RequestParam(required = false) List<Double> marks) {
         
-        if (studentIds != null && subjectIds != null && marks != null) {
+        // Debug logging
+        System.out.println("Saving grades - studentIds: " + studentIds + ", subjectIds: " + subjectIds + ", marks: " + marks);
+        
+        if (studentIds != null && !studentIds.isEmpty() && 
+            subjectIds != null && !subjectIds.isEmpty() && 
+            marks != null && !marks.isEmpty()) {
+            
             for (int i = 0; i < studentIds.size(); i++) {
                 Long studentId = studentIds.get(i);
                 Long subjectId = subjectIds.get(i);
                 Double score = marks.get(i);
                 
-                if (studentId != null && subjectId != null && score != null) {
-                    // Check if grade already exists
-                    boolean exists = gradeService.gradeExists(studentId, subjectId, term, year);
+                // Skip empty values
+                if (studentId == null || subjectId == null || score == null || score.isNaN()) {
+                    continue;
+                }
+                
+                System.out.println("Processing - Student: " + studentId + ", Subject: " + subjectId + ", Score: " + score);
+                
+                // Check if grade already exists
+                boolean exists = gradeService.gradeExists(studentId, subjectId, term, year);
+                
+                if (exists) {
+                    // Update existing grade
+                    Optional<Grade> existingGrade = gradeService.getGrade(studentId, subjectId, term, year);
+                    if (existingGrade.isPresent()) {
+                        Grade grade = existingGrade.get();
+                        grade.setMarks(score);
+                        gradeService.updateGrade(grade.getId(), grade);
+                        System.out.println("Updated grade for student: " + studentId);
+                    }
+                } else {
+                    // Create new grade
+                    Student student = studentService.getStudentById(studentId).orElse(null);
+                    Subject subject = subjectService.getSubjectById(subjectId).orElse(null);
+                    SchoolClass schoolClass = schoolClassService.getClassById(classId).orElse(null);
                     
-                    if (exists) {
-                        // Update existing grade
-                        Optional<Grade> existingGrade = gradeService.getGrade(studentId, subjectId, term, year);
-                        if (existingGrade.isPresent()) {
-                            Grade grade = existingGrade.get();
-                            grade.setMarks(score);
-                            gradeService.updateGrade(grade.getId(), grade);
-                        }
-                    } else {
-                        // Create new grade
-                        Student student = studentService.getStudentById(studentId).orElse(null);
-                        Subject subject = subjectService.getSubjectById(subjectId).orElse(null);
-                        SchoolClass schoolClass = schoolClassService.getClassById(classId).orElse(null);
-                        
-                        if (student != null && subject != null && schoolClass != null) {
-                            Grade grade = Grade.builder()
-                                .student(student)
-                                .subject(subject)
-                                .schoolClass(schoolClass)
-                                .term(term)
-                                .year(year)
-                                .marks(score)
-                                .build();
-                            gradeService.saveGrade(grade);
-                        }
+                    if (student != null && subject != null && schoolClass != null) {
+                        Grade grade = Grade.builder()
+                            .student(student)
+                            .subject(subject)
+                            .schoolClass(schoolClass)
+                            .term(term)
+                            .year(year)
+                            .marks(score)
+                            .build();
+                        gradeService.saveGrade(grade);
+                        System.out.println("Created new grade for student: " + studentId);
                     }
                 }
             }
+        } else {
+            System.out.println("No data to save - lists are empty or null");
         }
         
         return "redirect:/performance/entry?classId=" + classId + "&term=" + term + "&year=" + year;
+    }
+
+    @GetMapping("/view")
+    public String viewMarks(@RequestParam Long classId, 
+                          @RequestParam String term,
+                          @RequestParam Integer year,
+                          Model model) {
+        
+        List<Student> students = studentService.getStudentsByClass(classId);
+        Optional<SchoolClass> schoolClass = schoolClassService.getClassById(classId);
+        
+        if (schoolClass.isPresent()) {
+            model.addAttribute("students", students);
+            model.addAttribute("schoolClass", schoolClass.get());
+            model.addAttribute("term", term);
+            model.addAttribute("year", year);
+            
+            // Get all active subjects
+            List<Subject> allSubjects = subjectService.getActiveSubjects();
+            
+            // Filter subjects based on class level
+            List<Subject> subjects;
+            Integer classLevel = schoolClass.get().getClassLevel();
+            
+            if (classLevel != null && classLevel >= 4) {
+                // P.4 to P.7 - only core subjects
+                List<String> coreSubjects = List.of("English", "Mathematics", "Science", "Social Studies");
+                subjects = allSubjects.stream()
+                    .filter(s -> coreSubjects.stream()
+                        .anyMatch(cs -> s.getSubjectName().equalsIgnoreCase(cs)))
+                    .collect(Collectors.toList());
+            } else {
+                // P.1 to P.3 - all subjects
+                subjects = allSubjects;
+            }
+            
+            model.addAttribute("subjects", subjects);
+            
+            // Get existing grades - Map: studentId -> (subjectId -> Grade)
+            Map<Long, Map<Long, Grade>> existingGrades = new HashMap<>();
+            for (Student student : students) {
+                Map<Long, Grade> studentGrades = new HashMap<>();
+                for (Subject subj : subjects) {
+                    Optional<Grade> grade = gradeService.getGrade(student.getId(), subj.getId(), term, year);
+                    grade.ifPresent(g -> studentGrades.put(subj.getId(), g));
+                }
+                existingGrades.put(student.getId(), studentGrades);
+            }
+            model.addAttribute("existingGrades", existingGrades);
+            
+            return "performance/view";
+        }
+        
+        return "redirect:/performance";
     }
 
     @GetMapping("/student/{studentId}")
