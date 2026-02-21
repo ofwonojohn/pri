@@ -60,7 +60,7 @@
                         </div>
                     </form>
                     <div th:if="${selectedClass != null && studentResults != null}" class="mt-3">
-                        <h3 class="mb-3">Class Report: <span th:text="${selectedClass.className}"></span></h3>
+                        <h3 class="mb-3">Class Report: <span th:text="${selectedClass.className}"></span> - <span th:text="${term}"></span>, <span th:text="${year}"></span></h3>
                         <div class="card mb-3">
                             <div class="card-header">
                                 <h4 class="card-title">Class Summary</h4>
