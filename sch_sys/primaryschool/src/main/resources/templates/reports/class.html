@@ -7,114 +7,176 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <header class="header">
-        <div class="header-content">
-            <div class="school-name">
-                <i class="fas fa-school"></i>
-                <span>Primary School Management System</span>
+
+<header class="header">
+    <div class="header-content">
+        <div class="school-name">
+            <i class="fas fa-school"></i>
+            <span>Primary School Management System</span>
+        </div>
+    </div>
+</header>
+
+<div class="nav-container">
+    <nav class="sidebar">
+        <ul class="sidebar-menu">
+            <li><a th:href="@{/}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+            <li><a th:href="@{/students}"><i class="fas fa-user-graduate"></i><span>Students</span></a></li>
+            <li><a th:href="@{/teachers}"><i class="fas fa-chalkboard-teacher"></i><span>Teachers</span></a></li>
+            <li><a th:href="@{/classes}"><i class="fas fa-door-open"></i><span>Classes</span></a></li>
+            <li><a th:href="@{/subjects}"><i class="fas fa-book"></i><span>Subjects</span></a></li>
+            <li><a th:href="@{/performance}"><i class="fas fa-chart-line"></i><span>Performance</span></a></li>
+            <li><a th:href="@{/reports}" class="active"><i class="fas fa-file-alt"></i><span>Reports</span></a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <div class="container">
+
+            <div class="page-header">
+                <h1 class="page-title">Class Report</h1>
+                <a th:href="@{/reports}" class="btn btn-secondary">Back</a>
+            </div>
+
+            <div class="card">
+
+                <!-- FILTER FORM -->
+                <form th:action="@{/reports/class}" method="get" class="mb-3">
+                    <div class="form-row">
+
+                        <div class="form-group">
+                            <label class="form-label">Select Class *</label>
+                            <select name="classId" class="form-control" onchange="this.form.submit()">
+                                <option value="">-- Select Class --</option>
+                                <option th:each="cls : ${classes}"
+                                        th:value="${cls.id}"
+                                        th:text="${cls.className}"
+                                        th:selected="${selectedClass != null && selectedClass.id == cls.id}">
+                                    P.1
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Term *</label>
+                            <select name="term" class="form-control" onchange="this.form.submit()">
+                                <option value="Term 1" th:selected="${term == 'Term 1'}">Term 1</option>
+                                <option value="Term 2" th:selected="${term == 'Term 2'}">Term 2</option>
+                                <option value="Term 3" th:selected="${term == 'Term 3'}">Term 3</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Year *</label>
+                            <select name="year" class="form-control" onchange="this.form.submit()">
+                                <option th:each="yr : ${years}"
+                                        th:value="${yr}"
+                                        th:text="${yr}"
+                                        th:selected="${yr == year}">
+                                    2026
+                                </option>
+                            </select>
+                        </div>
+
+                    </div>
+                </form>
+
+                <!-- REPORT SECTION -->
+                <div th:if="${selectedClass != null && studentResults != null}" class="mt-3">
+
+                    <h3 class="mb-3">
+                        Class Report:
+                        <span th:text="${selectedClass.className}"></span> -
+                        <span th:text="${term}"></span>,
+                        <span th:text="${year}"></span>
+                    </h3>
+
+                    <!-- CLASS SUMMARY -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h4 class="card-title">Class Summary</h4>
+                        </div>
+                        <table class="table">
+                            <tr>
+                                <th>Total Students</th>
+                                <td th:text="${studentResults.size()}">30</td>
+                            </tr>
+                            <tr>
+                                <th>Class Teacher</th>
+                                <td th:text="${selectedClass.classTeacher != null ? selectedClass.classTeacher.firstName + ' ' + selectedClass.classTeacher.lastName : 'Not Assigned'}">
+                                    Teacher Name
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- STUDENT RESULTS TABLE -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Student Results</h4>
+                        </div>
+
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Position</th>
+                                    <th>Student Name</th>
+                                    <th>Admission No</th>
+                                    <th>Total Marks</th>
+                                    <th>Best 4</th>
+                                    <th>Division</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                <tr th:each="result, stat : ${studentResults}">
+                                    <td th:text="${stat.index + 1}">1</td>
+                                    <td th:text="${result.student.firstName + ' ' + result.student.lastName}">John Doe</td>
+                                    <td th:text="${result.student.admissionNumber}">ADM001</td>
+                                    <td th:text="${result.totalMarks}">450</td>
+                                    <td th:text="${result.best4Aggregate}">180</td>
+
+                                    <!-- ✅ FIXED DIVISION BADGE -->
+                                    <td>
+                                        <span th:switch="${result.division}">
+                                            <span th:case="'I'" class="badge badge-success">I</span>
+                                            <span th:case="'II'" class="badge badge-info">II</span>
+                                            <span th:case="'III'" class="badge badge-warning">III</span>
+                                            <span th:case="*"
+                                                  class="badge badge-danger"
+                                                  th:text="${result.division}">
+                                                IV
+                                            </span>
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <a th:href="@{/reports/student(studentId=${result.student.id},term=${term},year=${year})}"
+                                           class="btn btn-sm btn-info">
+                                            View Report
+                                        </a>
+                                    </td>
+                                </tr>
+
+                                <tr th:if="${#lists.isEmpty(studentResults)}">
+                                    <td colspan="7" class="text-center">No results found</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
             </div>
         </div>
-    </header>
-    <div class="nav-container">
-        <nav class="sidebar">
-            <ul class="sidebar-menu">
-                <li><a th:href="@{/}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
-                <li><a th:href="@{/students}"><i class="fas fa-user-graduate"></i><span>Students</span></a></li>
-                <li><a th:href="@{/teachers}"><i class="fas fa-chalkboard-teacher"></i><span>Teachers</span></a></li>
-                <li><a th:href="@{/classes}"><i class="fas fa-door-open"></i><span>Classes</span></a></li>
-                <li><a th:href="@{/subjects}"><i class="fas fa-book"></i><span>Subjects</span></a></li>
-                <li><a th:href="@{/performance}"><i class="fas fa-chart-line"></i><span>Performance</span></a></li>
-                <li><a th:href="@{/reports}" class="active"><i class="fas fa-file-alt"></i><span>Reports</span></a></li>
-            </ul>
-        </nav>
-        <main class="main-content">
-            <div class="container">
-                <div class="page-header">
-                    <h1 class="page-title">Class Report</h1>
-                    <a th:href="@{/reports}" class="btn btn-secondary">Back</a>
-                </div>
-                <div class="card">
-                    <form th:action="@{/reports/class}" method="get" class="mb-3">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Select Class *</label>
-                                <select name="classId" class="form-control" onchange="this.form.submit()">
-                                    <option value="">-- Select Class --</option>
-                                    <option th:each="cls : ${classes}" th:value="${cls.id}" th:text="${cls.className}" th:selected="${selectedClass != null && selectedClass.id == cls.id}">P.1</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Term *</label>
-                                <select name="term" class="form-control" onchange="this.form.submit()">
-                                    <option value="Term 1" th:selected="${term == 'Term 1'}">Term 1</option>
-                                    <option value="Term 2" th:selected="${term == 'Term 2'}">Term 2</option>
-                                    <option value="Term 3" th:selected="${term == 'Term 3'}">Term 3</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Year *</label>
-                                <select name="year" class="form-control" onchange="this.form.submit()">
-                                    <option th:each="yr : ${years}" th:value="${yr}" th:text="${yr}" th:selected="${yr == year}">2026</option>
-                                </select>
-                            </div>
-                        </div>
-                    </form>
-                    <div th:if="${selectedClass != null && studentResults != null}" class="mt-3">
-                        <h3 class="mb-3">Class Report: <span th:text="${selectedClass.className}"></span> - <span th:text="${term}"></span>, <span th:text="${year}"></span></h3>
-                        <div class="card mb-3">
-                            <div class="card-header">
-                                <h4 class="card-title">Class Summary</h4>
-                            </div>
-                            <table class="table">
-                                <tr>
-                                    <th>Total Students</th>
-                                    <td th:text="${studentResults.size()}">30</td>
-                                </tr>
-                                <tr>
-                                    <th>Class Teacher</th>
-                                    <td th:text="${selectedClass.classTeacher != null ? selectedClass.classTeacher.firstName + ' ' + selectedClass.classTeacher.lastName : 'Not Assigned'}">Teacher Name</td>
-                                </tr>
-                            </table>
-                        </div>
-                        <div class="card">
-                            <div class="card-header">
-                                <h4 class="card-title">Student Results</h4>
-                            </div>
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Position</th>
-                                        <th>Student Name</th>
-                                        <th>Admission No</th>
-                                        <th>Total Marks</th>
-                                        <th>Best 4</th>
-                                        <th>Division</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="result, stat : ${studentResults}">
-                                        <td th:text="${stat.index + 1}">1</td>
-                                        <td th:text="${result.student.firstName + ' ' + result.student.lastName}">John Doe</td>
-                                        <td th:text="${result.student.admissionNumber}">ADM001</td>
-                                        <td th:text="${result.totalMarks}">450</td>
-                                        <td th:text="${result.best4Aggregate}">180</td>
-                                        <td><span class="badge" th:classappend="${result.division == 'I'} ? 'badge-success' : (result.division == 'II'} ? 'badge-info' : (result.division == 'III'} ? 'badge-warning' : 'badge-danger')" th:text="${result.division}">I</span></td>
-                                        <td><a th:href="@{/reports/student(studentId=${result.student.id},term=${term},year=${year})}" class="btn btn-sm btn-info">View Report</a></td>
-                                    </tr>
-                                    <tr th:if="${#lists.isEmpty(studentResults)}">
-                                        <td colspan="7" class="text-center">No results found</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-    <footer class="footer">
-        <p>&copy; 2026 Primary School Management System. All Rights Reserved.</p>
-    </footer>
+    </main>
+</div>
+
+<footer class="footer">
+    <p>&copy; 2026 Primary School Management System. All Rights Reserved.</p>
+</footer>
+
 </body>
 </html>
