@@ -32,22 +32,78 @@
                 <div class="page-header">
                     <h1 class="page-title">Reports</h1>
                 </div>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <i class="fas fa-clipboard-list stat-icon"></i>
-                        <div class="stat-info">
-                            <h3>Class Report</h3>
-                            <p>Generate class performance report</p>
-                            <a th:href="@{/reports/class}" class="btn btn-primary mt-2">View Class Report</a>
-                        </div>
+                
+                <!-- Class Report Form -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h2><i class="fas fa-clipboard-list"></i> Class Report</h2>
                     </div>
-                    <div class="stat-card">
-                        <i class="fas fa-user-graduate stat-icon"></i>
-                        <div class="stat-info">
-                            <h3>Student Report Card</h3>
-                            <p>Generate individual student report</p>
-                            <a th:href="@{/reports/student}" class="btn btn-primary mt-2">View Student Report</a>
-                        </div>
+                    <div class="card-body">
+                        <form th:action="@{/reports/class}" method="get" class="form-horizontal">
+                            <div class="form-group">
+                                <label for="classId" class="form-label">Select Class:</label>
+                                <select id="classId" name="classId" class="form-control" required>
+                                    <option value="">-- Select Class --</option>
+                                    <option th:each="cls : ${classes}" th:value="${cls.id}" th:text="${cls.className}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="term" class="form-label">Select Term:</label>
+                                <select id="term" name="term" class="form-control" required>
+                                    <option value="Term 1">Term 1</option>
+                                    <option value="Term 2">Term 2</option>
+                                    <option value="Term 3">Term 3</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="year" class="form-label">Select Year:</label>
+                                <select id="year" name="year" class="form-control" required>
+                                    <option th:each="yr : ${years}" th:value="${yr}" th:text="${yr}" th:selected="${yr == currentYear}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i> Generate Class Report
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Student Report Form -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-user-graduate"></i> Student Report Card</h2>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/reports/student}" method="get" class="form-horizontal">
+                            <div class="form-group">
+                                <label for="studentId" class="form-label">Select Student:</label>
+                                <select id="studentId" name="studentId" class="form-control" required>
+                                    <option value="">-- Select Student --</option>
+                                    <option th:each="std : ${students}" th:value="${std.id}" th:text="${std.firstName + ' ' + std.lastName + ' (' + std.admissionNumber + ')'}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="term" class="form-label">Select Term:</label>
+                                <select id="term" name="term" class="form-control" required>
+                                    <option value="Term 1">Term 1</option>
+                                    <option value="Term 2">Term 2</option>
+                                    <option value="Term 3">Term 3</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="year" class="form-label">Select Year:</label>
+                                <select id="year" name="year" class="form-control" required>
+                                    <option th:each="yr : ${years}" th:value="${yr}" th:text="${yr}" th:selected="${yr == currentYear}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i> Generate Student Report
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
