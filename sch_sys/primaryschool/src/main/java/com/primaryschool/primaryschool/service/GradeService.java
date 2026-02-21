@@ -179,6 +179,33 @@ public class GradeService {
     }
 
     /**
+     * Get class performance summary with mean score
+     */
+    public Map<String, Object> getClassPerformanceWithStats(Long classId, String term, Integer year) {
+        List<Map<String, Object>> performanceList = getClassPerformance(classId, term, year);
+        
+        Map<String, Object> result = new HashMap<>();
+        result.put("students", performanceList);
+        
+        // Calculate mean score
+        if (!performanceList.isEmpty()) {
+            double sum = performanceList.stream()
+                .mapToDouble(p -> (Double) p.get("averageScore"))
+                .sum();
+            double mean = sum / performanceList.size();
+            result.put("meanScore", Math.round(mean * 100.0) / 100.0);
+            
+            // Get top 3
+            result.put("top3", performanceList.stream().limit(3).toList());
+        } else {
+            result.put("meanScore", 0.0);
+            result.put("top3", new ArrayList<>());
+        }
+        
+        return result;
+    }
+
+    /**
      * Get top 3 performers in a class
      */
     public List<Map<String, Object>> getTopPerformers(Long classId, String term, Integer year) {

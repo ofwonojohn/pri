@@ -99,12 +99,8 @@
                                             <span th:if="${existingGrades[student.id] == null or existingGrades[student.id][subj.id] == null}" 
                                                   class="no-marks">-</span>
                                         </td>
-                                        <!-- Calculate total and average for each row -->
-                                        <td class="total-cell" th:with="total=${T(java.util.Collections).max({${{0}}})}">
-                                            <th:block th:with="total=0">
-                                                <span th:each="subj : ${subjects}" th:with="total=${existingGrades[student.id] != null and existingGrades[student.id][subj.id] != null ? total + existingGrades[student.id][subj.id].marks : total}"></span>
-                                                <span th:text="${total}">0</span>
-                                            </th:block>
+                                        <td class="total-cell">
+                                            <span class="no-marks">-</span>
                                         </td>
                                         <td class="total-cell">
                                             <span class="no-marks">-</span>

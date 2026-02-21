@@ -47,46 +47,82 @@ public class ReportsController {
     }
 
     @GetMapping("/class")
-    public String classReport(@RequestParam Long classId,
+    public String classReport(@RequestParam(required = false) Long classId,
                                @RequestParam(required = false, defaultValue = "Term 1") String term,
                                @RequestParam(required = false, defaultValue = "2026") Integer year,
                                Model model) {
         
-        Optional<SchoolClass> schoolClass = schoolClassService.getClassById(classId);
-        if (schoolClass.isPresent()) {
-            Map<String, Object> report = gradeService.generateClassReport(classId, term, year);
-            
-            model.addAttribute("schoolClass", schoolClass.get());
-            model.addAttribute("report", report);
-            model.addAttribute("term", term);
-            model.addAttribute("year", year);
-            
-            List<Integer> years = gradeService.getAllYears();
-            if (years.isEmpty()) {
-                years = List.of(LocalDate.now().getYear());
+        // Always add classes to the model
+        model.addAttribute("classes", schoolClassService.getAllClasses());
+        
+        List<Integer> years = gradeService.getAllYears();
+        if (years.isEmpty()) {
+            years = List.of(LocalDate.now().getYear());
+        }
+        model.addAttribute("years", years);
+        
+        if (classId != null) {
+            Optional<SchoolClass> schoolClass = schoolClassService.getClassById(classId);
+            if (schoolClass.isPresent()) {
+                Map<String, Object> report = gradeService.generateClassReport(classId, term, year);
+                
+                model.addAttribute("selectedClass", schoolClass.get());
+                model.addAttribute("report", report);
+                model.addAttribute("term", term);
+                model.addAttribute("year", year);
+                
+                // Get student results for the table
+                List<Map<String, Object>> studentResults = gradeService.getClassPerformance(classId, term, year);
+                model.addAttribute("studentResults", studentResults);
             }
-            model.addAttribute("years", years);
-            
-            return "reports/class";
         }
         
-        return "redirect:/reports";
+        return "reports/class";
     }
 
-    @GetMapping("/student/{studentId}")
-    public String studentReport(@PathVariable Long studentId,
+    @GetMapping("/student")
+    public String studentReport(@RequestParam Long studentId,
                                 @RequestParam(required = false, defaultValue = "Term 1") String term,
                                 @RequestParam(required = false, defaultValue = "2026") Integer year,
                                 Model model) {
         
         Optional<Student> student = studentService.getStudentById(studentId);
         if (student.isPresent()) {
+            // Get student performance data
             Map<String, Object> performance = gradeService.calculateStudentPerformance(studentId, term, year);
             
-            model.addAttribute("student", student.get());
+            model.addAttribute("selectedStudent", student.get());
             model.addAttribute("performance", performance);
             model.addAttribute("term", term);
             model.addAttribute("year", year);
+            
+            // Add report card data
+            if (!performance.isEmpty()) {
+                model.addAttribute("subjectGrades", performance.get("grades"));
+                model.addAttribute("totalMarks", performance.get("totalMarks"));
+                model.addAttribute("bestFourAggregate", performance.get("best4Aggregate"));
+                model.addAttribute("division", performance.get("division"));
+                
+                // Get class position
+                Long classId = student.get().getSchoolClass() != null ? student.get().getSchoolClass().getId() : null;
+                if (classId != null) {
+                    List<Map<String, Object>> classPerformance = gradeService.getClassPerformance(classId, term, year);
+                    int position = 1;
+                    int totalStudents = classPerformance.size();
+                    for (Map<String, Object> p : classPerformance) {
+                        Student s = (Student) p.get("student");
+                        if (s.getId().equals(studentId)) {
+                            break;
+                        }
+                        position++;
+                    }
+                    model.addAttribute("classPosition", position);
+                    model.addAttribute("totalStudents", totalStudents);
+                }
+            }
+            
+            // Add students list for selection
+            model.addAttribute("students", studentService.getActiveStudents());
             
             List<Integer> years = gradeService.getAllYears();
             if (years.isEmpty()) {
