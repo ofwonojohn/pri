@@ -20,4 +20,7 @@ public interface SchoolClassRepository extends JpaRepository<SchoolClass, Long> 
 
     @Query("SELECT sc FROM SchoolClass sc WHERE sc.classTeacher IS NULL")
     List<SchoolClass> findClassesWithoutTeacher();
+
+    @Query("SELECT sc FROM SchoolClass sc LEFT JOIN FETCH sc.students ORDER BY sc.classLevel ASC")
+    List<SchoolClass> findAllWithStudents();
 }
