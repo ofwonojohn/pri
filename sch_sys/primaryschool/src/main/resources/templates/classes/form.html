@@ -33,6 +33,10 @@
                     <h1 class="page-title" th:text="${schoolClass.id != null} ? 'Edit Class' : 'Add Class'">Add Class</h1>
                 </div>
                 <div class="card">
+                    <div th:if="${errorMessage}" class="alert alert-danger" 
+                        style="background:#f8d7da;color:#721c24;padding:10px;margin-bottom:15px;border-radius:5px;">
+                        <span th:text="${errorMessage}"></span>
+                    </div>
                     <form th:action="${schoolClass.id != null} ? @{/classes/{id}/update(id=${schoolClass.id})} : @{/classes/save}" th:object="${schoolClass}" method="post">
                         <div class="form-row">
                             <div class="form-group">
