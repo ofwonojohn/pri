@@ -28,3 +28,4 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
     long countBySchoolClassId(Long classId);
 }
+
