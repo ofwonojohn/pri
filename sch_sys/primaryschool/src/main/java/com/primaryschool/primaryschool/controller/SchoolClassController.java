@@ -33,7 +33,7 @@ public class SchoolClassController {
 
     @GetMapping
     public String listClasses(Model model) {
-        model.addAttribute("classes", schoolClassService.getAllClasses());
+        model.addAttribute("classes", schoolClassService.getAllClassesWithStudents());
         return "classes/list";
     }
 
