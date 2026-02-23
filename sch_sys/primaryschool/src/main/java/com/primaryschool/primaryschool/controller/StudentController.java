@@ -27,9 +27,10 @@ public class StudentController {
 
     @GetMapping
     public String listStudents(@RequestParam(required = false) Long classId, Model model) {
+
         List<Student> students;
         List<SchoolClass> classes = schoolClassService.getAllClasses();
-        
+
         if (classId != null) {
             students = studentService.getStudentsByClass(classId);
             Optional<SchoolClass> selectedClass = schoolClassService.getClassById(classId);
@@ -37,11 +38,11 @@ public class StudentController {
         } else {
             students = studentService.getActiveStudents();
         }
-        
+
         model.addAttribute("students", students);
         model.addAttribute("classes", classes);
         model.addAttribute("selectedClassId", classId);
-        
+
         return "students/list";
     }
 
@@ -52,48 +53,59 @@ public class StudentController {
         return "students/form";
     }
 
-    @GetMapping("/{id}")
-    public String viewStudent(@PathVariable Long id, Model model) {
-        Optional<Student> student = studentService.getStudentById(id);
-        if (student.isPresent()) {
-            model.addAttribute("student", student.get());
-            return "students/view";
+    @PostMapping("/save")
+    public String saveStudent(@ModelAttribute Student student, Model model) {
+
+        Optional<Student> existingStudent =
+                studentService.findByAdmissionNumber(student.getAdmissionNumber());
+
+        if (existingStudent.isPresent()) {
+            model.addAttribute("errorMessage", "Admission number already exists!");
+            model.addAttribute("classes", schoolClassService.getAllClasses());
+            return "students/form";
         }
+
+        studentService.saveStudent(student);
         return "redirect:/students";
     }
 
     @GetMapping("/{id}/edit")
     public String showEditStudentForm(@PathVariable Long id, Model model) {
+
         Optional<Student> student = studentService.getStudentById(id);
+
         if (student.isPresent()) {
             model.addAttribute("student", student.get());
             model.addAttribute("classes", schoolClassService.getAllClasses());
             return "students/form";
         }
-        return "redirect:/students";
-    }
 
-    @PostMapping("/save")
-    public String saveStudent(@ModelAttribute Student student) {
-        studentService.saveStudent(student);
         return "redirect:/students";
     }
 
     @PostMapping("/{id}/update")
-    public String updateStudent(@PathVariable Long id, @ModelAttribute Student student) {
+    public String updateStudent(@PathVariable Long id,
+                                @ModelAttribute Student student,
+                                Model model) {
+
+        Optional<Student> existingStudent =
+                studentService.findByAdmissionNumber(student.getAdmissionNumber());
+
+        if (existingStudent.isPresent() &&
+                !existingStudent.get().getId().equals(id)) {
+
+            model.addAttribute("errorMessage", "Admission number already exists!");
+            model.addAttribute("classes", schoolClassService.getAllClasses());
+            return "students/form";
+        }
+
         studentService.updateStudent(id, student);
-        return "redirect:/students/" + id;
+        return "redirect:/students";
     }
 
     @GetMapping("/{id}/delete")
     public String deleteStudent(@PathVariable Long id) {
         studentService.deleteStudent(id);
         return "redirect:/students";
-    }
-
-    @PostMapping("/{id}/assign-class")
-    public String assignStudentToClass(@PathVariable Long id, @RequestParam Long classId) {
-        studentService.assignStudentToClass(id, classId);
-        return "redirect:/students/" + id;
     }
 }
