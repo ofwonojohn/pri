@@ -33,6 +33,10 @@ public class SchoolClassService {
         return schoolClassRepository.findAllOrderByClassLevel();
     }
 
+    public List<SchoolClass> getAllClassesWithStudents() {
+        return schoolClassRepository.findAllWithStudents();
+    }
+
     public Optional<SchoolClass> getClassById(Long id) {
         return schoolClassRepository.findById(id);
     }
