@@ -20,21 +20,29 @@ public class StudentController {
     private final SchoolClassService schoolClassService;
 
     @Autowired
-    public StudentController(StudentService studentService, SchoolClassService schoolClassService) {
+    public StudentController(StudentService studentService,
+                             SchoolClassService schoolClassService) {
         this.studentService = studentService;
         this.schoolClassService = schoolClassService;
     }
 
+    /* ==============================
+            LIST STUDENTS
+       ============================== */
+
     @GetMapping
-    public String listStudents(@RequestParam(required = false) Long classId, Model model) {
+    public String listStudents(@RequestParam(required = false) Long classId,
+                               Model model) {
 
         List<Student> students;
         List<SchoolClass> classes = schoolClassService.getAllClasses();
 
         if (classId != null) {
             students = studentService.getStudentsByClass(classId);
-            Optional<SchoolClass> selectedClass = schoolClassService.getClassById(classId);
-            selectedClass.ifPresent(c -> model.addAttribute("selectedClass", c));
+            Optional<SchoolClass> selectedClass =
+                    schoolClassService.getClassById(classId);
+            selectedClass.ifPresent(c ->
+                    model.addAttribute("selectedClass", c));
         } else {
             students = studentService.getActiveStudents();
         }
@@ -46,6 +54,10 @@ public class StudentController {
         return "students/list";
     }
 
+    /* ==============================
+            NEW STUDENT FORM
+       ============================== */
+
     @GetMapping("/new")
     public String showNewStudentForm(Model model) {
         model.addAttribute("student", new Student());
@@ -53,55 +65,55 @@ public class StudentController {
         return "students/form";
     }
 
+    /* ==============================
+            SAVE STUDENT
+       ============================== */
+
     @PostMapping("/save")
-    public String saveStudent(@ModelAttribute Student student, Model model) {
-
-        Optional<Student> existingStudent =
-                studentService.findByAdmissionNumber(student.getAdmissionNumber());
-
-        if (existingStudent.isPresent()) {
-            model.addAttribute("errorMessage", "Admission number already exists!");
-            model.addAttribute("classes", schoolClassService.getAllClasses());
-            return "students/form";
-        }
+    public String saveStudent(@ModelAttribute Student student) {
 
         studentService.saveStudent(student);
+
         return "redirect:/students";
     }
 
-    @GetMapping("/{id}/edit")
-    public String showEditStudentForm(@PathVariable Long id, Model model) {
+    /* ==============================
+            EDIT STUDENT FORM
+       ============================== */
 
-        Optional<Student> student = studentService.getStudentById(id);
+    @GetMapping("/{id}/edit")
+    public String showEditStudentForm(@PathVariable Long id,
+                                      Model model) {
+
+        Optional<Student> student =
+                studentService.getStudentById(id);
 
         if (student.isPresent()) {
             model.addAttribute("student", student.get());
-            model.addAttribute("classes", schoolClassService.getAllClasses());
+            model.addAttribute("classes",
+                    schoolClassService.getAllClasses());
             return "students/form";
         }
 
         return "redirect:/students";
     }
+
+    /* ==============================
+            UPDATE STUDENT
+       ============================== */
 
     @PostMapping("/{id}/update")
     public String updateStudent(@PathVariable Long id,
-                                @ModelAttribute Student student,
-                                Model model) {
-
-        Optional<Student> existingStudent =
-                studentService.findByAdmissionNumber(student.getAdmissionNumber());
-
-        if (existingStudent.isPresent() &&
-                !existingStudent.get().getId().equals(id)) {
-
-            model.addAttribute("errorMessage", "Admission number already exists!");
-            model.addAttribute("classes", schoolClassService.getAllClasses());
-            return "students/form";
-        }
+                                @ModelAttribute Student student) {
 
         studentService.updateStudent(id, student);
+
         return "redirect:/students";
     }
+
+    /* ==============================
+            DELETE STUDENT
+       ============================== */
 
     @GetMapping("/{id}/delete")
     public String deleteStudent(@PathVariable Long id) {
