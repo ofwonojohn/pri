@@ -3,6 +3,7 @@ package com.primaryschool.primaryschool.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,6 +19,10 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /* ==============================
+            BASIC DETAILS
+       ============================== */
+
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
@@ -28,13 +33,21 @@ public class Student {
     private String gender; // Male, Female
 
     @Column(name = "date_of_birth", nullable = false)
-    private String dateOfBirth;
+    private LocalDate dateOfBirth;
 
-    @Column(name = "admission_number", unique = true)
+    /* ==============================
+        AUTO-GENERATED ADMISSION
+       ============================== */
+
+    @Column(name = "admission_number", nullable = false, unique = true, updatable = false)
     private String admissionNumber;
 
-    @Column(name = "date_of_admission")
-    private String dateOfAdmission;
+    @Column(name = "date_of_admission", nullable = false)
+    private LocalDate dateOfAdmission;
+
+    /* ==============================
+            PARENT DETAILS
+       ============================== */
 
     @Column(name = "parent_name")
     private String parentName;
@@ -48,9 +61,17 @@ public class Student {
     @Column(name = "address")
     private String address;
 
-    @Column(name = "is_active")
+    /* ==============================
+            STATUS
+       ============================== */
+
+    @Column(name = "is_active", nullable = false)
     @Builder.Default
     private Boolean isActive = true;
+
+    /* ==============================
+            RELATIONSHIPS
+       ============================== */
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_id")
@@ -60,7 +81,10 @@ public class Student {
     @Builder.Default
     private Set<Grade> grades = new HashSet<>();
 
-    // Helper method to get full name
+    /* ==============================
+            HELPER METHODS
+       ============================== */
+
     public String getFullName() {
         return firstName + " " + lastName;
     }
