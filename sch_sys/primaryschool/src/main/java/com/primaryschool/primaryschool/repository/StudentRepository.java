@@ -12,6 +12,10 @@ import java.util.Optional;
 @Repository
 public interface StudentRepository extends JpaRepository<Student, Long> {
 
+    /* ==============================
+        BASIC FIND METHODS
+       ============================== */
+
     Optional<Student> findByAdmissionNumber(String admissionNumber);
 
     List<Student> findBySchoolClassId(Long classId);
@@ -20,12 +24,23 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
     List<Student> findBySchoolClassIdAndIsActiveTrue(Long classId);
 
-    @Query("SELECT s FROM Student s WHERE s.schoolClass.id = :classId AND s.isActive = true ORDER BY s.lastName, s.firstName")
+    long countBySchoolClassId(Long classId);
+
+    /* ==============================
+        SORTED ACTIVE STUDENTS
+       ============================== */
+
+    @Query("SELECT s FROM Student s " +
+           "WHERE s.schoolClass.id = :classId " +
+           "AND s.isActive = true " +
+           "ORDER BY s.lastName, s.firstName")
     List<Student> findActiveStudentsByClassId(@Param("classId") Long classId);
 
-    @Query("SELECT MAX(s.admissionNumber) FROM Student s WHERE s.admissionNumber LIKE :prefix%")
+    /* ==============================
+        ADMISSION NUMBER GENERATOR
+       ============================== */
+
+    @Query("SELECT MAX(s.admissionNumber) FROM Student s " +
+           "WHERE s.admissionNumber LIKE CONCAT(:prefix, '%')")
     String findMaxAdmissionNumberWithPrefix(@Param("prefix") String prefix);
-
-    long countBySchoolClassId(Long classId);
 }
-
